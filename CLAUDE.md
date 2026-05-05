@@ -6,6 +6,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **eMPHRe** — Electronic Mental and Public Health Registry. A clinical workflow prototype for Pasig City LGU (Philippines) mental health facilities. The full domain spec, data model, seeded test data, validation rules, and planned-but-unbuilt features live in `EMPHRE_PROJECT_CONTEXT.md` — read it before changing clinical logic, terminology, or workflow steps. It is the source of truth for *intent*; the HTML file is the source of truth for *current behavior*.
 
+### `context/` folder
+
+A local reference folder (gitignored — `context/.gitignore` is `*`, so nothing here is committed). Treat it as read-only background material, not as files to edit:
+
+- `emphre_system_architecture_v2.svg` / `.jpg` — current system architecture diagram. View this (especially the SVG) when you need to understand the three clinical modules + four supporting modules + role/access matrix at a glance.
+- `emphre_system_architecture.svg` / `.jpg` — earlier v1 of the diagram, kept for reference. Prefer v2.
+- `mh_registry_prototype.html` and `EMPHRE_PROJECT_CONTEXT.md` — snapshots identical to the root copies. Edit only the root files; do not modify the ones in `context/`.
+
 ## Running / "building"
 
 There is no build, no package manager, no tests, no lint. The entire app is one file: `mh_registry_prototype.html` (~4450 lines, all CSS + JS inline, vanilla JS, no external runtime dependencies).
