@@ -1438,6 +1438,10 @@
   </div>
 
   <div id="advSearchPanel">
+    <div id="advFacilityNotice" style="display:none;align-items:center;gap:8px;background:#FFF8E1;border:1px solid #FFD54F;border-radius:var(--radius);padding:8px 12px;margin-bottom:12px;font-size:12px;color:#7A5C00;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:#F59E0B"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>Results are limited to patients assessed at <strong id="advFacilityNoticeName"></strong>.</span>
+    </div>
     <!-- Row 1: Age Group | Sex | Status | Assessment Year -->
     <div class="adv-search-row">
       <div class="adv-field">
@@ -1524,14 +1528,14 @@
       </div>
       <div class="adv-field" style="flex-shrink:0;">
         <label>Intervention</label>
-        <div class="adv-flags" style="flex-direction:column;gap:6px;">
+        <div class="adv-flags">
           <label class="adv-flag-cb"><input type="checkbox" id="fIntPsycho" /> Psychosocial</label>
           <label class="adv-flag-cb"><input type="checkbox" id="fIntPharma" /> Pharmacological</label>
         </div>
       </div>
       <div class="adv-field" style="flex-shrink:0;">
         <label>Classifications</label>
-        <div class="adv-flags" style="flex-direction:column;gap:6px;">
+        <div class="adv-flags">
           <label class="adv-flag-cb"><input type="checkbox" id="fPwd" /> PWD</label>
           <label class="adv-flag-cb"><input type="checkbox" id="fLguEmp" /> LGU Employee</label>
           <label class="adv-flag-cb"><input type="checkbox" id="f4Ps" /> 4Ps</label>
@@ -2575,23 +2579,28 @@
   /* Show/hide LGU-only row and reset its values when switching users */
   function updateAdvPanelForUser() {
     const lguRow = document.getElementById('advLguRow');
+    const notice = document.getElementById('advFacilityNotice');
     if (isLGUUser()) {
       lguRow.style.display = '';
+      notice.style.display = 'none';
     } else {
       lguRow.style.display = 'none';
       document.getElementById('fFacility').value = '';
       document.getElementById('fBarangay').value = '';
+      document.getElementById('advFacilityNoticeName').textContent = currentUser.facility;
+      notice.style.display = 'flex';
     }
     updateAdvBadge();
   }
 
-  function applyFilters() {
+  function applyFilters(noValidate) {
     const accession = document.getElementById('fAccession').value.toLowerCase().trim();
     const last      = document.getElementById('fLast').value.toLowerCase().trim();
     const first     = document.getElementById('fFirst').value.toLowerCase().trim();
     const adv       = advSearchValues();
 
     if (!accession && !last && !first && !advSearchActive(adv)) {
+      if (noValidate) { resetFilters(); return; }
       document.getElementById('fAccession').style.borderColor = 'var(--danger)';
       document.getElementById('fLast').style.borderColor = 'var(--danger)';
       document.getElementById('fFirst').style.borderColor = 'var(--danger)';
@@ -6031,11 +6040,11 @@
     const open = document.getElementById('advSearchPanel').classList.toggle('open');
     document.getElementById('advSearchToggle').classList.toggle('open', open);
   });
-  // Update "active" badge whenever any advanced field changes
+  // Live search + badge update on any advanced field change
   ['fAgeGroup','fSex','fStatus','fAssessYear','fFacility','fBarangay','fMhgap'].forEach(id =>
-    document.getElementById(id).addEventListener('change', updateAdvBadge));
+    document.getElementById(id).addEventListener('change', () => { updateAdvBadge(); applyFilters(true); }));
   ['fIntPsycho','fIntPharma','fPwd','fLguEmp','f4Ps'].forEach(id =>
-    document.getElementById(id).addEventListener('change', updateAdvBadge));
+    document.getElementById(id).addEventListener('change', () => { updateAdvBadge(); applyFilters(true); }));
   // Initialize panel visibility and patient scope for the default user on page load
   updateAdvPanelForUser();
   filteredPatients = [...visiblePatients()];
