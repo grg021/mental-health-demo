@@ -104,6 +104,68 @@
   .filter-bar input::placeholder { color: var(--text-placeholder); }
   .filter-bar select { appearance: none; background: var(--surface) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' stroke='%23909399' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat right 10px center; padding-right: 28px; cursor: pointer; }
 
+  #advSearchToggle {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface); border: 1px solid var(--border-light);
+    border-top: none; border-radius: 0 0 var(--radius) var(--radius);
+    padding: 0 16px; height: 34px; cursor: pointer;
+    margin-bottom: 20px; transition: background .15s;
+    font-size: 12px; font-weight: 600; color: var(--text-secondary);
+    letter-spacing: .3px; text-transform: uppercase; user-select: none;
+  }
+  #advSearchToggle:hover { background: #F0F4FF; color: var(--primary); }
+  #advSearchToggle.open { border-radius: 0; margin-bottom: 0; }
+  #advSearchToggle .adv-toggle-left { display: flex; align-items: center; gap: 7px; }
+  #advSearchToggle .adv-chevron {
+    width: 14px; height: 14px; transition: transform .2s ease;
+    flex-shrink: 0; color: var(--text-secondary);
+  }
+  #advSearchToggle.open .adv-chevron { transform: rotate(180deg); }
+
+  #advSearchPanel {
+    overflow: hidden;
+    max-height: 0;
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    border-top: none;
+    border-radius: 0 0 var(--radius) var(--radius);
+    margin-bottom: 0;
+    transition: max-height .25s ease, padding .25s ease, margin-bottom .25s ease;
+    padding: 0 16px;
+  }
+  #advSearchPanel.open {
+    max-height: 360px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  .adv-search-row {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin-bottom: 12px;
+  }
+  .adv-search-row:last-child { margin-bottom: 0; }
+  .adv-field { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+  .adv-field > label { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .4px; }
+  .adv-field input, .adv-field select {
+    height: 32px; padding: 0 12px; border: 1px solid var(--border);
+    border-radius: var(--radius); font-size: 13px; color: var(--text);
+    background: var(--surface); font-family: inherit; outline: none;
+    transition: border-color 0.2s; min-width: 130px;
+  }
+  .adv-field select { appearance: none; background: var(--surface) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M3 5l3 3 3-3' stroke='%23909399' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat right 10px center; padding-right: 28px; cursor: pointer; }
+  .adv-field input:focus, .adv-field select:focus { border-color: var(--primary); }
+  .adv-field input::placeholder { color: var(--text-placeholder); }
+  .adv-age-range { display: flex; align-items: center; gap: 6px; }
+  .adv-age-range input { min-width: 64px; width: 64px; }
+  .adv-age-range span { font-size: 12px; color: var(--text-secondary); }
+  .adv-flags { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .adv-flag-cb { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--text); cursor: pointer; }
+  .adv-flag-cb input[type=checkbox] { width: 14px; height: 14px; accent-color: var(--primary); cursor: pointer; }
+  .adv-active-badge {
+    display: inline-block; background: var(--primary); color: #fff;
+    font-size: 10px; font-weight: 700; letter-spacing: .4px;
+    padding: 1px 6px; border-radius: 10px; vertical-align: middle; margin-left: 4px;
+    text-transform: uppercase;
+  }
+
   .btn {
     height: 32px;
     padding: 0 16px;
@@ -286,6 +348,18 @@
   .form-field.invalid input:focus,
   .form-field.invalid select:focus {
     box-shadow: 0 0 0 2px rgba(245,108,108,0.12) !important;
+  }
+  .radio-group-invalid {
+    outline: 1.5px solid var(--danger);
+    border-radius: var(--radius);
+    padding: 6px;
+    background: #FEF8F8;
+  }
+  .radio-group-invalid-label {
+    font-size: 11px;
+    color: var(--danger);
+    margin-top: 4px;
+    display: block;
   }
   .page-info { font-size: 12px; color: var(--text-secondary); margin: 0 8px; }
 
@@ -1319,24 +1393,30 @@
 
 <header class="app-header">
   <h1>Mental Health Registry — Pasig City LGU</h1>
-  <div class="user-chip">
-    <div class="avatar">GH</div>
-    <div>
-      <div style="font-weight: 500; color: var(--text);">Greg Hermo, RN</div>
-      <div style="font-size: 11px; color: var(--primary);">MH Nurse Coordinator (Facility)</div>
-      <div style="font-size: 11px;">Bagong Katipunan Health Center</div>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <button id="btnUserToggle" onclick="toggleUser()" style="display:flex;align-items:center;gap:6px;padding:5px 12px;border:1px solid var(--border);border-radius:20px;background:var(--bg);font-size:11px;font-weight:500;color:var(--text-secondary);cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s;" onmouseover="this.style.borderColor='var(--primary)';this.style.color='var(--primary)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-secondary)'">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+      <span id="toggleLabel">Switch to LGU Physician</span>
+    </button>
+    <div class="user-chip">
+      <div class="avatar" id="headerAvatar">GH</div>
+      <div>
+        <div style="font-weight: 500; color: var(--text);" id="headerName">Greg Hermo, RN</div>
+        <div style="font-size: 11px; color: var(--primary);" id="headerRole">MH Nurse Coordinator (Facility)</div>
+        <div style="font-size: 11px;" id="headerFacility">Bagong Katipunan Health Center</div>
+      </div>
     </div>
   </div>
 </header>
 
 <div class="container" id="registryView">
 
-  <div class="filter-bar" id="filterBar">
+  <div class="filter-bar" id="filterBar" style="border-radius:var(--radius) var(--radius) 0 0;margin-bottom:0;">
     <input type="text" placeholder="Accession no. (e.g. MH-000-25-001)" id="fAccession" style="min-width: 240px;" />
     <input type="text" placeholder="Last name" id="fLast" style="min-width: 180px;" />
     <input type="text" placeholder="First name" id="fFirst" style="min-width: 160px;" />
 
-    <div style="margin-left: auto; display: flex; gap: 8px;">
+    <div style="margin-left: auto; display: flex; gap: 8px; align-items: center;">
       <button class="btn btn-primary" id="btnSearch">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
         Search
@@ -1348,11 +1428,127 @@
     </div>
   </div>
 
+  <div id="advSearchToggle">
+    <div class="adv-toggle-left">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+      Advanced Search
+      <span id="advActiveBadge" style="display:none" class="adv-active-badge">active</span>
+    </div>
+    <svg class="adv-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+
+  <div id="advSearchPanel">
+    <!-- Row 1: Age Group | Sex | Status | Assessment Year -->
+    <div class="adv-search-row">
+      <div class="adv-field">
+        <label>Age Group</label>
+        <select id="fAgeGroup">
+          <option value="">Any</option>
+          <option value="A">A — 0 to 9 years old</option>
+          <option value="B">B — 10 to 19 years old</option>
+          <option value="C">C — 20 to 59 years old</option>
+          <option value="D">D — 60 years old and above</option>
+        </select>
+      </div>
+      <div class="adv-field">
+        <label>Sex</label>
+        <select id="fSex">
+          <option value="">Any</option>
+          <option value="M">Male</option>
+          <option value="F">Female</option>
+        </select>
+      </div>
+      <div class="adv-field">
+        <label>Status</label>
+        <select id="fStatus">
+          <option value="">Any</option>
+          <option value="Active">Active</option>
+          <option value="Recovered">Recovered</option>
+          <option value="Deceased">Deceased</option>
+          <option value="Lost to Follow-up">Lost to Follow-up</option>
+        </select>
+      </div>
+      <div class="adv-field">
+        <label>Assessment Year</label>
+        <select id="fAssessYear">
+          <option value="">Any year</option>
+          <option value="2025">2025</option>
+          <option value="2026">2026</option>
+        </select>
+      </div>
+    </div>
+    <!-- Row 2: LGU-only — Health Facility + Barangay -->
+    <div class="adv-search-row" id="advLguRow" style="display:none">
+      <div class="adv-field" style="min-width:220px">
+        <label>Health Facility</label>
+        <select id="fFacility">
+          <option value="">All facilities</option>
+          <option>Bagong Katipunan Health Center</option>
+          <option>Bagong Ilog Health Center</option>
+          <option>Pinagbuhatan Health Center</option>
+          <option>Sta. Lucia Health Center</option>
+          <option>MHSATOP Pasig</option>
+        </select>
+      </div>
+      <div class="adv-field" style="min-width:200px">
+        <label>Barangay</label>
+        <select id="fBarangay">
+          <option value="">All barangays</option>
+          <option>Bagong Ilog</option>
+          <option>Bagong Katipunan</option>
+          <option>Kapitolyo</option>
+          <option>Kapasigan</option>
+          <option>Manggahan</option>
+          <option>Pinagbuhatan</option>
+          <option>Santa Lucia</option>
+          <option>Ugong</option>
+        </select>
+      </div>
+    </div>
+    <!-- Row 3: MHGAP Condition | Intervention | Classifications -->
+    <div class="adv-search-row" style="flex-wrap:nowrap;align-items:flex-start;">
+      <div class="adv-field" style="flex:0 0 230px;">
+        <label>MHGAP Condition</label>
+        <select id="fMhgap">
+          <option value="">Any condition</option>
+          <option>Depression</option>
+          <option>Anxiety Disorders</option>
+          <option>Psychosis</option>
+          <option>Epilepsy</option>
+          <option>Child &amp; Adolescent Mental &amp; Behavioral Disorder</option>
+          <option>Dementia</option>
+          <option>Self-harm / Suicide attempt</option>
+          <option>Disorder due to Substance Use</option>
+          <option>Other Significant Mental Health Concerns</option>
+        </select>
+      </div>
+      <div class="adv-field" style="flex-shrink:0;">
+        <label>Intervention</label>
+        <div class="adv-flags" style="flex-direction:column;gap:6px;">
+          <label class="adv-flag-cb"><input type="checkbox" id="fIntPsycho" /> Psychosocial</label>
+          <label class="adv-flag-cb"><input type="checkbox" id="fIntPharma" /> Pharmacological</label>
+        </div>
+      </div>
+      <div class="adv-field" style="flex-shrink:0;">
+        <label>Classifications</label>
+        <div class="adv-flags" style="flex-direction:column;gap:6px;">
+          <label class="adv-flag-cb"><input type="checkbox" id="fPwd" /> PWD</label>
+          <label class="adv-flag-cb"><input type="checkbox" id="fLguEmp" /> LGU Employee</label>
+          <label class="adv-flag-cb"><input type="checkbox" id="f4Ps" /> 4Ps</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="stats-row">
     <div class="total-count" id="searchResultLabel" style="visibility: hidden;">
       <span id="filterNote"></span>
     </div>
     <div style="display: flex; gap: 10px;">
+      <button class="btn btn-default btn-lg" id="btnNewReport">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        New Report
+      </button>
       <button class="btn btn-success btn-lg" id="btnNewPatient">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg>
         New Patient
@@ -1439,6 +1635,51 @@
     <div class="modal-footer" style="justify-content:flex-end;">
       <div class="modal-actions">
         <button class="btn btn-default" id="visitDetailCloseBtn2">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="reportModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <div class="modal-title">Generate Report</div>
+      <button class="modal-close" id="reportModalCloseBtn">×</button>
+    </div>
+    <div class="modal-body" style="padding:24px;">
+      <div class="form-field" style="margin-bottom:18px;">
+        <label for="rpt_type">Report Type</label>
+        <select id="rpt_type">
+          <option value="tcl_screening">TCL - MH Screening &amp; Assessment</option>
+          <option value="tcl_intervention">TCL - MH Intervention Monitoring</option>
+          <option value="mmchd_quarterly">MMCHD - Quarterly MH Screening &amp; Assessment</option>
+        </select>
+      </div>
+      <div class="form-field" style="margin-bottom:18px;">
+        <label for="rpt_year">Year</label>
+        <select id="rpt_year">
+          <option value="2025">2025</option>
+          <option value="2026">2026</option>
+        </select>
+      </div>
+      <div class="form-field" style="margin-bottom:18px;">
+        <label for="rpt_facility">Health Facility</label>
+        <select id="rpt_facility"></select>
+      </div>
+      <div id="rpt_selectall_wrap" style="display:none;margin-top:-8px;margin-bottom:18px;">
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+          <input type="checkbox" id="rpt_selectall" style="width:14px;height:14px;accent-color:var(--primary);cursor:pointer;" />
+          Select all facilities
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer" style="justify-content:flex-end;">
+      <div class="modal-actions">
+        <button class="btn btn-default" id="reportCancelBtn">Cancel</button>
+        <button class="btn btn-primary" id="reportGenerateBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Generate Report
+        </button>
       </div>
     </div>
   </div>
@@ -1534,12 +1775,38 @@
     return { 'OD': 30, 'BD': 60, 'TD': 90, 'QID': 120, 'PRN': 30, 'QWEEK': 5 }[freq] || 30;
   }
 
-  /* ── Current logged-in user ── */
-  const currentUser = {
-    name:     'Greg Hermo, RN',
-    role:     'MH Nurse Coordinator (Facility)',
-    facility: 'Bagong Katipunan Health Center',
-  };
+  /* ── User profiles for demo toggle ── */
+  const USER_PROFILES = [
+    {
+      name:     'Greg Hermo, RN',
+      initials: 'GH',
+      role:     'MH Nurse Coordinator (Facility)',
+      facility: 'Bagong Katipunan Health Center',
+    },
+    {
+      name:     'Dr. Ramon J. Bautista, MD',
+      initials: 'RB',
+      role:     'MH Physician (LGU)',
+      facility: 'Pasig City Health Department',
+    },
+  ];
+
+  let currentUserIdx = 0;
+  let currentUser = USER_PROFILES[0];
+
+  function toggleUser() {
+    currentUserIdx = currentUserIdx === 0 ? 1 : 0;
+    currentUser = USER_PROFILES[currentUserIdx];
+    const other = USER_PROFILES[currentUserIdx === 0 ? 1 : 0];
+    document.getElementById('headerAvatar').textContent   = currentUser.initials;
+    document.getElementById('headerName').textContent     = currentUser.name;
+    document.getElementById('headerRole').textContent     = currentUser.role;
+    document.getElementById('headerFacility').textContent = currentUser.facility;
+    document.getElementById('toggleLabel').textContent    = `Switch to ${other.name.split(',')[0].replace('Dr. ', '')}`;
+    updateAdvPanelForUser();
+    // Re-scope the visible patient pool when switching users
+    filteredPatients = [...visiblePatients()];
+  }
 
   /* ── Provider lookup for seeded assessment data ── */
   const SEEDED_PROVIDERS = {
@@ -1567,6 +1834,26 @@
     if (role.includes('LGU'))           return 'role-lgu-nurse';
     return 'role-facility';
   }
+
+  const NCR_BARANGAYS = {
+    'Pasig City': ['Bagong Ilog','Bagong Katipunan','Bambang','Buting','Caniogan','Dela Paz','Kalawaan','Kapasigan','Kapitolyo','Malinao','Manggahan','Maybunga','Oranbo','Palatiw','Pinagbuhatan','Pineda','Rosario','Sagad','San Antonio','San Joaquin','San Jose','San Nicolas','Santa Lucia','Santa Rosa','Santo Tomas','Santolan','Sumilang','Ugong'],
+    'Caloocan City': ['Bagong Barrio','Camarin','Dagat-Dagatan','Deparo','Grace Park East','Grace Park West','Kaunlaran','Maypajo','Sangandaan','Tala','Tinajeros','University Hills'],
+    'Las Piñas City': ['Almanza Dos','Almanza Uno','BF International Village','Daniel Fajardo','Elias Aldana','Ilaya','Manuyo Dos','Manuyo Uno','Pamplona Dos','Pamplona Tres','Pamplona Uno','Pilar','Pulang Lupa Dos','Pulang Lupa Uno','Talon Cinco','Talon Cuatro','Talon Dos','Talon Tres','Talon Uno','Zapote'],
+    'Makati City': ['Bangkal','Bel-Air','Carmona','Comembo','East Rembo','Forbes Park','Guadalupe Nuevo','Guadalupe Viejo','Olympia','Palanan','Pembo','Pinagkaisahan','Pio del Pilar','Poblacion','Rockwell','Singkamas','Tejeros','Valenzuela','West Rembo'],
+    'Malabon City': ['Acacia','Baritan','Barosain','Catmon','Concepcion','Dampalit','Flores','Hulong Duhat','Ibaba','Longos','Maysilo','Muzon','Panghulo','Potrero','San Agustin','Santolan','Tañong','Tinajeros','Tonsuya','Tugatog'],
+    'Mandaluyong City': ['Addition Hills','Bagong Silang','Barangka Drive','Barangka Ibaba','Barangka Ilaya','Barangka Itaas','Burol','Daang Bakal','Hagdang Bato Itaas','Hagdang Bato Libis','Highway Hills','Hulo','Mabini-J. Rizal','Malamig','Mauway','Namayan','New Zañiga','Old Zañiga','Pag-asa','Plainview','Pleasant Hills','Poblacion','San Joaquin','Vergara','Wack-Wack Greenhills'],
+    'City of Manila': ['Binondo','Ermita','Intramuros','Malate','Paco','Pandacan','Port Area','Quiapo','Sampaloc','San Andres Bukid','San Miguel','San Nicolas','Santa Ana','Santa Cruz','Santa Mesa','Tondo'],
+    'Marikina City': ['Barangka','Calumpang','Concepcion Dos','Concepcion Uno','Fortune','Industrial Valley','Jesus de la Peña','Malanday','Marikina Heights','Nangka','Parang','San Roque','Santa Elena','Santo Niño','Tañong','Tumana'],
+    'Muntinlupa City': ['Alabang','Ayala Alabang','Bayanan','Buli','Cupang','New Alabang Village','Poblacion','Putatan','Sucat','Tunasan'],
+    'Navotas City': ['Bagumbayan Norte','Bagumbayan Sur','Bangculasi','Daanghari','Navotas East','Navotas West','North Bay Blvd. North','North Bay Blvd. South','San Jose','San Roque','Sipac-Almacen','Tangos Norte','Tangos Sur','Tanza'],
+    'Parañaque City': ['BF Homes','Don Bosco','Don Galo','La Huerta','Marcelo Green','Merville','Moonwalk','San Antonio','San Dionisio','San Isidro','San Martin de Porres','Santo Niño','Sun Valley','Tambo','Vitalez'],
+    'Pasay City': ['Baclaran','Don Galo','Libertad','Malibay','Maricaban','Palanyag','Pinagsilungan','Pulang-Lupa','San Jose','San Rafael','Santa Clara','Victoria'],
+    'Pateros': ['Aguho','Magtanggol','Poblacion Wawa','San Pedro','San Roque','Santa Ana','Santo Rosario-Kanluran','Santo Rosario-Silangan','Tabacalera'],
+    'Quezon City': ['Alicia','Bagbag','Bagong Pag-asa','Bagong Silangan','Balintawak','Batasan Hills','Commonwealth','Culiat','Del Monte','Diliman','Fairview','Holy Spirit','Kaligayahan','Lagro','Maharlika','Mangga','Matandang Balara','Old Balara','Payatas','Project 4','Project 6','Project 8','San Bartolome','Tandang Sora','Ugong Norte'],
+    'San Juan City': ['Balong Bato','Batis','Corazon de Jesus','Ermitaño','Greenhills','Isabelita','Kabayanan','Little Baguio','Maytunas','Onse','Pedro Cruz','Progreso','Rivera','Salapan','San Perfecto','Tibagan','West Crame'],
+    'Taguig City': ['Bagumbayan','Bambang','Calzada','Central Bicutan','Central Signal Village','Fort Bonifacio','Hagonoy','Ibayo-Tipas','Katuparan','Ligid-Tipas','Lower Bicutan','Maharlika Village','Napindan','New Lower Bicutan','North Daang Hari','North Signal Village','Palingon-Tipas','Pinagsama','San Miguel','South Daang Hari','South Signal Village','Tanyag','Tuktukan','Upper Bicutan','Ususan','Wawa','Western Bicutan'],
+    'Valenzuela City': ['Arkong Bato','Bagbaguin','Balangkas','Bignay','Bisig','Canumay East','Canumay West','Coloong','Dalandanan','Gen. T. de Leon','Isla','Karuhatan','Lawang Bato','Lingunan','Mabolo','Malanday','Malinta','Mapulang Lupa','Marulas','Maysan','Palasan','Parada','Paso de Blas','Pasolo','Poblacion','Polo','Punturin','Rincon','Tagalag','Ugong','Viente Reales','Wawang Pulo'],
+  };
 
   const PATIENTS = [
     {
@@ -1689,6 +1976,8 @@
       guardian: 'Ernesto Villanueva', relationship: 'Parent',
       caseType: 'Old', referralSource: 'Hospital/Clinic',
       status: 'Active',
+      isLGUEmployee: true,
+      is4Ps: true,
       assessments: [
         {
           date: '2025-01-08',
@@ -1753,6 +2042,8 @@
           diagnosis: {
             icd: 'F20.0 — Schizophrenia, paranoid type (improving)',
             mhgap: ['Psychosis'],
+            isFinalDiagnosis: true,
+            finalDiagnosisDate: '2025-02-05',
           },
           treatment: {
             psychosocial: ['Psychoeducation', 'Community and family support strengthening'],
@@ -1873,7 +2164,7 @@
 
     {
       facility: 'MHSATOP Pasig',
-      accession: 'MH-000-25-006',
+      accession: 'MH-000-26-001',
       first: 'Danilo', middle: 'Cruz', last: 'Pagtalunan',
       sex: 'M', age: 29, dob: '1996-01-11',
       barangay: 'Manggahan', address: '3 Sampaguita St., Manggahan',
@@ -1884,7 +2175,8 @@
       caseType: 'New', referralSource: 'Walk-in',
       status: 'Active',
       assessments: [{
-        date: '2025-01-28',
+        date: '2026-01-28',
+        provider: { name: 'Dr. Ramon J. Bautista, MD', role: 'MH Doctor (LGU)', facility: 'MHSATOP Pasig' },
         cc_patient: 'Hindi ko na kontrolado ang pag-inom ko. Pag hindi ako umiinom, nanginginig ako at hindi makatulog. Nawalan na ako ng trabaho dahil dito.',
         cc_guardian: 'Umaabot na sa isang bote ng rum kada araw. Agresibo kapag inaalisan ng alak. Nagnanakaw na ng pera sa bahay.',
         onset: 'Heavy drinking started age 20; physical dependence established over past 3 years.',
@@ -1921,13 +2213,13 @@
           ],
           meds: [{ name: 'Thiamine 100mg tab', freq: 'TD', dispensed: 90 }, { name: 'Diazepam 5mg tab', freq: 'PRN', dispensed: 30 }],
         },
-        referral: { referTo: ['Smoking cessation clinic', 'MHSATOP'], remarks: 'Enrolled in MHSATOP outpatient program. Motivational interviewing sessions scheduled. Family involved in treatment planning.', followUp: '2025-02-04' },
+        referral: { referTo: ['Smoking cessation clinic', 'MHSATOP'], remarks: 'Enrolled in MHSATOP outpatient program. Motivational interviewing sessions scheduled. Family involved in treatment planning.', followUp: '2026-02-04' },
       }],
     },
 
     {
       facility: 'Bagong Katipunan Health Center',
-      accession: 'MH-000-25-007',
+      accession: 'MH-000-26-002',
       first: 'Luz', middle: 'Bautista', last: 'Macapagal',
       sex: 'F', age: 44, dob: '1981-06-30',
       barangay: 'Bagong Katipunan', address: '47 Pag-asa Ave., Bagong Katipunan',
@@ -1939,7 +2231,8 @@
       status: 'Recovered',
       assessments: [
         {
-          date: '2025-01-05',
+          date: '2026-01-05',
+          provider: { name: 'Karen V. Villanueva, RN', role: 'MH Nurse Coordinator (LGU)', facility: 'Bagong Katipunan Health Center' },
           cc_patient: 'Nasunog ang aming tindahan noong nakaraang buwan. Hindi ko matanggap. Lagi akong nananaginip ng apoy, natatakot akong matulog.',
           cc_guardian: 'Hindi siya makabalik sa palengke. Niyayakap namin siya pero parang wala sa sarili siya. Hindi kumakain.',
           onset: 'Acute onset following house and stall fire one month ago.',
@@ -1976,10 +2269,11 @@
             ],
             meds: [{ name: 'Sertraline 50mg tab', freq: 'OD', dispensed: 30 }, { name: 'Prazosin 1mg tab', freq: 'OD', dispensed: 30 }],
           },
-          referral: { referTo: ['CSWDO'], remarks: 'Coordinated with CSWDO for livelihood assistance and temporary financial support.', followUp: '2025-01-19' },
+          referral: { referTo: ['CSWDO'], remarks: 'Coordinated with CSWDO for livelihood assistance and temporary financial support.', followUp: '2026-01-19' },
         },
         {
-          date: '2025-03-01',
+          date: '2026-03-01',
+          provider: { name: 'Karen V. Villanueva, RN', role: 'MH Nurse Coordinator (LGU)', facility: 'Bagong Katipunan Health Center' },
           cc_patient: 'Mas maayos na ako ngayon. Nakakatulog na. Nakabalik na rin ako sa trabaho, nag-upa na lang kami ng pansamantalang tindahan.',
           cc_guardian: 'Malaki ang pagbabago. Mas masaya na siya. Kumakain na siya nang maayos.',
           onset: 'Significant improvement since initial consult.',
@@ -2006,6 +2300,8 @@
           diagnosis: {
             icd: 'F43.1 — PTSD, resolving',
             mhgap: ['Other significant mental health concerns'],
+            isFinalDiagnosis: true,
+            finalDiagnosisDate: '2026-03-01',
           },
           treatment: {
             psychosocial: ['Psychoeducation', 'Brief psychosocial support / supportive counseling'],
@@ -2018,7 +2314,7 @@
 
     {
       facility: 'MHSATOP Pasig',
-      accession: 'MH-000-25-008',
+      accession: 'MH-000-26-003',
       first: 'Ramon Jr.', middle: 'Dela Torre', last: 'Espiritu',
       sex: 'M', age: 34, dob: '1991-09-05',
       barangay: 'Kapitolyo', address: '9 Rizal Ave., Kapitolyo',
@@ -2029,7 +2325,8 @@
       caseType: 'Old', referralSource: 'Hospital/Clinic',
       status: 'Active',
       assessments: [{
-        date: '2025-02-14',
+        date: '2026-02-14',
+        provider: { name: 'Dr. Ramon J. Bautista, MD', role: 'MH Doctor (LGU)', facility: 'MHSATOP Pasig' },
         cc_patient: 'Pakiramdam ko parang hindi na kailangan ng tulog. Maraming ideya sa ulo ko. Gumastos ako ng malaki — bumili ng equipment na hindi ko kailangan.',
         cc_guardian: 'Tatlong araw na hindi natulog. Nagsasalita nang mabilis. Nagpadala ng libu-libong piso sa mga charity nang walang pasabi.',
         onset: 'Current manic episode over 4–5 days; known bipolar since age 26.',
@@ -2061,13 +2358,13 @@
           psychosocial: ['Psychoeducation', 'Community and family support strengthening'],
           meds: [{ name: 'Lithium carbonate 400mg tab', freq: 'BD', dispensed: 60 }, { name: 'Quetiapine 200mg tab', freq: 'OD', dispensed: 30 }, { name: 'Clonazepam 1mg tab', freq: 'PRN', dispensed: 30 }],
         },
-        referral: { referTo: ['Psychiatry'], remarks: 'Urgent psychiatric referral for assessment of hospitalization need. Family provided psychoeducation on episode recognition and medication compliance.', followUp: '2025-02-21' },
+        referral: { referTo: ['Psychiatry'], remarks: 'Urgent psychiatric referral for assessment of hospitalization need. Family provided psychoeducation on episode recognition and medication compliance.', followUp: '2026-02-21' },
       }],
     },
 
     {
       facility: 'Bagong Ilog Health Center',
-      accession: 'MH-000-25-009',
+      accession: 'MH-000-26-004',
       first: 'Aireen', middle: 'Pascual', last: 'Domingo',
       sex: 'F', age: 31, dob: '1994-04-17',
       barangay: 'Ugong', address: '15 Harmony St., Ugong',
@@ -2078,7 +2375,8 @@
       caseType: 'New', referralSource: 'Workplace',
       status: 'Lost to Followup',
       assessments: [{
-        date: '2025-01-20',
+        date: '2026-01-20',
+        provider: { name: 'Liza M. Gomez, RN', role: 'MH Nurse Coordinator (Facility)', facility: 'Bagong Ilog Health Center' },
         cc_patient: 'Bigla bigla akong natatakot. Nanginginig, hindi makalanghap nang maayos, pakiramdam ko mamamatay na ako. Nangyayari ito sa trabaho.',
         cc_guardian: 'Tinanggal siya sa trabaho nang makitang nanginginig siya at umiiyak nang walang dahilan sa opisina.',
         onset: 'Panic attacks started 6 months ago; escalating frequency (now 3–4x/week).',
@@ -2115,13 +2413,13 @@
           ],
           meds: [{ name: 'Escitalopram 10mg tab', freq: 'OD', dispensed: 30 }, { name: 'Propranolol 20mg tab', freq: 'PRN', dispensed: 30 }],
         },
-        referral: { referTo: ['Psychologist'], remarks: 'Referred for CBT (panic-focused protocol). Did not appear for scheduled follow-up. Attempted contact x2 — no response.', followUp: '2025-02-03' },
+        referral: { referTo: ['Psychologist'], remarks: 'Referred for CBT (panic-focused protocol). Did not appear for scheduled follow-up. Attempted contact x2 — no response.', followUp: '2026-02-03' },
       }],
     },
 
     {
       facility: 'Sta. Lucia Health Center',
-      accession: 'MH-000-25-010',
+      accession: 'MH-000-26-005',
       first: 'Eduardo', middle: 'Navarro', last: 'Tolentino',
       sex: 'M', age: 58, dob: '1967-12-01',
       barangay: 'Santa Lucia', address: '66 Malinaw St., Sta. Lucia',
@@ -2132,7 +2430,8 @@
       caseType: 'Old', referralSource: 'Hospital/Clinic',
       status: 'Deceased',
       assessments: [{
-        date: '2025-01-12',
+        date: '2026-01-12',
+        provider: { name: 'Dr. Elena C. Torres, MD', role: 'MH Doctor (LGU)', facility: 'Sta. Lucia Health Center' },
         cc_patient: 'Naiisip ko na ang buhay ko ay wala nang saysay. Lahat ng nagmamahal sa akin ay mas maayos kung wala na ako.',
         cc_guardian: 'Sinabi niya sa amin na naghanda na siya ng pag-alis. Nakita namin ang pisi sa kanyang kwarto.',
         onset: 'Deterioration over 6 weeks following wife\'s death.',
@@ -2179,7 +2478,7 @@
     },
   ];
 
-  let filteredPatients = [...PATIENTS];
+  let filteredPatients = [...PATIENTS]; // will be re-scoped after visiblePatients() is available
   let newPatientData = {};
 
   let hasSearched = false;
@@ -2239,13 +2538,60 @@
     });
   }
 
+  /* Return patients visible to the current user (facility-scoped for non-LGU) */
+  function visiblePatients() {
+    if (isLGUUser()) return PATIENTS;
+    return PATIENTS.filter(p => p.facility === currentUser.facility);
+  }
+
+  function advSearchValues() {
+    return {
+      ageGroup:    document.getElementById('fAgeGroup').value,
+      sex:         document.getElementById('fSex').value,
+      status:      document.getElementById('fStatus').value,
+      assessYear:  document.getElementById('fAssessYear').value,
+      facility:    isLGUUser() ? document.getElementById('fFacility').value : '',
+      barangay:    isLGUUser() ? document.getElementById('fBarangay').value : '',
+      mhgap:       document.getElementById('fMhgap').value.toLowerCase().trim(),
+      intPsycho:   document.getElementById('fIntPsycho').checked,
+      intPharma:   document.getElementById('fIntPharma').checked,
+      pwd:         document.getElementById('fPwd').checked,
+      lguEmp:      document.getElementById('fLguEmp').checked,
+      f4Ps:        document.getElementById('f4Ps').checked,
+    };
+  }
+
+  function advSearchActive(adv) {
+    return adv.ageGroup || adv.sex || adv.status || adv.assessYear ||
+           adv.facility || adv.barangay || adv.mhgap ||
+           adv.intPsycho || adv.intPharma || adv.pwd || adv.lguEmp || adv.f4Ps;
+  }
+
+  function updateAdvBadge() {
+    const active = advSearchActive(advSearchValues());
+    document.getElementById('advActiveBadge').style.display = active ? '' : 'none';
+  }
+
+  /* Show/hide LGU-only row and reset its values when switching users */
+  function updateAdvPanelForUser() {
+    const lguRow = document.getElementById('advLguRow');
+    if (isLGUUser()) {
+      lguRow.style.display = '';
+    } else {
+      lguRow.style.display = 'none';
+      document.getElementById('fFacility').value = '';
+      document.getElementById('fBarangay').value = '';
+    }
+    updateAdvBadge();
+  }
+
   function applyFilters() {
     const accession = document.getElementById('fAccession').value.toLowerCase().trim();
-    const last = document.getElementById('fLast').value.toLowerCase().trim();
-    const first = document.getElementById('fFirst').value.toLowerCase().trim();
+    const last      = document.getElementById('fLast').value.toLowerCase().trim();
+    const first     = document.getElementById('fFirst').value.toLowerCase().trim();
+    const adv       = advSearchValues();
 
-    if (!accession && !last && !first) {
-      // Require at least one field
+    if (!accession && !last && !first && !advSearchActive(adv)) {
       document.getElementById('fAccession').style.borderColor = 'var(--danger)';
       document.getElementById('fLast').style.borderColor = 'var(--danger)';
       document.getElementById('fFirst').style.borderColor = 'var(--danger)';
@@ -2258,10 +2604,31 @@
     }
 
     hasSearched = true;
-    filteredPatients = PATIENTS.filter(p => {
+    filteredPatients = visiblePatients().filter(p => {
       if (accession && !p.accession.toLowerCase().includes(accession)) return false;
-      if (last && !p.last.toLowerCase().includes(last)) return false;
+      if (last  && !p.last.toLowerCase().includes(last))   return false;
       if (first && !p.first.toLowerCase().includes(first)) return false;
+      if (adv.ageGroup && ageGroup(p.age) !== adv.ageGroup) return false;
+      if (adv.sex && p.sex !== adv.sex) return false;
+      if (adv.status && (p.status || '') !== adv.status) return false;
+      if (adv.assessYear) {
+        if (!(p.assessments || []).some(a => a.date && a.date.startsWith(adv.assessYear))) return false;
+      }
+      if (adv.facility && p.facility !== adv.facility) return false;
+      if (adv.barangay && (p.barangay || '') !== adv.barangay) return false;
+      if (adv.mhgap) {
+        const conds = (p.assessments || []).flatMap(a => (a.diagnosis && a.diagnosis.mhgap) || []);
+        if (!conds.some(c => c.toLowerCase().includes(adv.mhgap))) return false;
+      }
+      if (adv.intPsycho) {
+        if (!(p.assessments || []).some(a => a.treatment && (a.treatment.psychosocial || []).length > 0)) return false;
+      }
+      if (adv.intPharma) {
+        if (!(p.assessments || []).some(a => a.treatment && (a.treatment.meds || []).length > 0)) return false;
+      }
+      if (adv.pwd    && !p.isPWD)         return false;
+      if (adv.lguEmp && !p.isLGUEmployee) return false;
+      if (adv.f4Ps   && !p.is4Ps)         return false;
       return true;
     });
     renderTable();
@@ -2269,8 +2636,13 @@
 
   function resetFilters() {
     ['fAccession','fLast','fFirst'].forEach(id => document.getElementById(id).value = '');
+    ['fAgeGroup','fSex','fStatus','fAssessYear','fFacility','fBarangay','fMhgap'].forEach(id =>
+      document.getElementById(id).value = '');
+    ['fIntPsycho','fIntPharma','fPwd','fLguEmp','f4Ps'].forEach(id =>
+      document.getElementById(id).checked = false);
+    updateAdvBadge();
     hasSearched = false;
-    filteredPatients = [...PATIENTS];
+    filteredPatients = [...visiblePatients()];
     document.getElementById('tableIdleState').style.display = '';
     document.getElementById('tableActiveState').style.display = 'none';
     document.getElementById('searchResultLabel').style.visibility = 'hidden';
@@ -2450,6 +2822,8 @@
     const existing = document.getElementById('validationBanner');
     if (existing) existing.remove();
     document.querySelectorAll('.form-field.invalid').forEach(f => f.classList.remove('invalid'));
+    document.querySelectorAll('.radio-group-invalid').forEach(el => el.classList.remove('radio-group-invalid'));
+    document.querySelectorAll('.radio-group-invalid-label').forEach(el => el.style.display = 'none');
   }
 
   function goToStep2() {
@@ -2556,25 +2930,40 @@
       <div class="form-section-title">Patient details</div>
       <div class="form-row">
         <div class="form-field">
-          <label><span class="req">*</span>Barangay</label>
-          <select id="p_barangay">
-            <option value="">Select barangay</option>
-            <option>Bagong Ilog</option>
-            <option>Bagong Katipunan</option>
-            <option>Bambang</option>
-            <option>Caniogan</option>
-            <option>Kapasigan</option>
-            <option>Kapitolyo</option>
-            <option>Manggahan</option>
-            <option>Pinagbuhatan</option>
-            <option>San Miguel</option>
-            <option>Santa Lucia</option>
-            <option>Ugong</option>
+          <label><span class="req">*</span>LGU / City</label>
+          <select id="p_lgu">
+            ${Object.keys(NCR_BARANGAYS).map(lgu => `<option${lgu === 'Pasig City' ? ' selected' : ''}>${lgu}</option>`).join('')}
           </select>
         </div>
         <div class="form-field">
+          <label><span class="req">*</span>Barangay</label>
+          <select id="p_barangay">
+            <option value="">Select barangay</option>
+            ${NCR_BARANGAYS['Pasig City'].map(b => `<option>${b}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
           <label>Address</label>
           <input type="text" id="p_address" placeholder="House #, street, purok" />
+        </div>
+        <div class="form-field" style="justify-content: flex-end;">
+          <label style="margin-bottom: 8px;">Special classifications</label>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <label class="cb-item" id="lbl_pwd" style="display:flex;align-items:center;gap:6px;padding:6px 10px;cursor:pointer;">
+              <input type="checkbox" id="p_pwd" style="width:14px;height:14px;accent-color:var(--primary);cursor:pointer;" />
+              PWD
+            </label>
+            <label class="cb-item" id="lbl_lguemp" style="display:flex;align-items:center;gap:6px;padding:6px 10px;cursor:pointer;">
+              <input type="checkbox" id="p_lguemp" style="width:14px;height:14px;accent-color:var(--primary);cursor:pointer;" />
+              LGU Employee
+            </label>
+            <label class="cb-item" id="lbl_4ps" style="display:flex;align-items:center;gap:6px;padding:6px 10px;cursor:pointer;">
+              <input type="checkbox" id="p_4ps" style="width:14px;height:14px;accent-color:var(--primary);cursor:pointer;" />
+              4Ps / NHTS
+            </label>
+          </div>
         </div>
       </div>
       <div class="form-row">
@@ -2671,6 +3060,24 @@
         });
       });
     });
+
+    const lguSel = document.getElementById('p_lgu');
+    const brgySel = document.getElementById('p_barangay');
+    if (lguSel && brgySel) {
+      lguSel.addEventListener('change', () => {
+        const brgyList = NCR_BARANGAYS[lguSel.value] || [];
+        brgySel.innerHTML = '<option value="">Select barangay</option>' +
+          brgyList.map(b => `<option>${b}</option>`).join('');
+      });
+    }
+
+    ['p_pwd', 'p_lguemp', 'p_4ps'].forEach(id => {
+      const cb = document.getElementById(id);
+      if (!cb) return;
+      cb.addEventListener('change', () => {
+        cb.closest('.cb-item').classList.toggle('checked', cb.checked);
+      });
+    });
   }
 
   function savePatient() {
@@ -2695,16 +3102,18 @@
       last: newPatientData.last,
       sex: newPatientData.sex,
       age: parseInt(newPatientData.age) || 0,
+      lgu: document.getElementById('p_lgu').value,
       barangay: barangay,
+      isPWD: document.getElementById('p_pwd').checked,
+      isLGUEmployee: document.getElementById('p_lguemp').checked,
+      is4Ps: document.getElementById('p_4ps').checked,
       status: 'Active',
       _new: true,
     };
     PATIENTS.unshift(newRec);
-    filteredPatients = [newRec];
-    hasSearched = true;
-    renderTable();
     closeModal();
     showToast(`Patient ${newRec.first} ${newRec.last} added successfully · ${newRec.accession}`);
+    viewPatient(0);
   }
 
   /* =================== PATIENT DETAIL VIEW =================== */
@@ -2752,9 +3161,19 @@
         <div class="sidebar-field"><span class="k">Accession</span><span class="v mono">${p.accession}</span></div>
         <div class="sidebar-field"><span class="k">PhilHealth PIN</span><span class="v mono">${p.pin || '—'}</span></div>
         <div class="sidebar-field"><span class="k">Date of birth</span><span class="v">${dobDisplay}</span></div>
+        ${(p.isPWD || p.isLGUEmployee || p.is4Ps) ? `
+        <div class="sidebar-field" style="flex-wrap:wrap;gap:4px;align-items:center;">
+          <span class="k">Classifications</span>
+          <span class="v" style="display:flex;gap:4px;flex-wrap:wrap;">
+            ${p.isPWD ? '<span class="badge" style="background:#EEF2FF;color:#3730A3;border:1px solid #C7D2FE;padding:2px 7px;border-radius:10px;font-size:11px;">PWD</span>' : ''}
+            ${p.isLGUEmployee ? '<span class="badge" style="background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0;padding:2px 7px;border-radius:10px;font-size:11px;">LGU Employee</span>' : ''}
+            ${p.is4Ps ? '<span class="badge" style="background:#FFF7ED;color:#92400E;border:1px solid #FDE68A;padding:2px 7px;border-radius:10px;font-size:11px;">4Ps / NHTS</span>' : ''}
+          </span>
+        </div>` : ''}
       </div>
       <div class="sidebar-section">
         <div class="sidebar-section-title">Contact & address</div>
+        <div class="sidebar-field"><span class="k">LGU</span><span class="v">${p.lgu || 'Pasig City'}</span></div>
         <div class="sidebar-field"><span class="k">Barangay</span><span class="v">${p.barangay}</span></div>
         <div class="sidebar-field"><span class="k">Address</span><span class="v">${p.address || '—'}</span></div>
         <div class="sidebar-field"><span class="k">Contact 1</span><span class="v">${p.contact1 || '—'}</span></div>
@@ -2926,10 +3345,16 @@
   function renderDiagnosisTab(p) {
     const rows = p.assessments.map((a, i) => {
       const d = a.diagnosis || {};
+      const finalBadge = d.isFinalDiagnosis
+        ? `<span style="display:inline-block;background:var(--primary);color:#fff;font-size:9px;font-weight:700;letter-spacing:.5px;padding:1px 6px;border-radius:10px;vertical-align:middle;margin-left:5px;text-transform:uppercase">Final Dx</span>`
+        : '';
+      const finalDate = d.isFinalDiagnosis && d.finalDiagnosisDate
+        ? `<div style="font-size:10px;color:var(--text-secondary);margin-top:3px">Final Dx date: ${fmtDate(d.finalDiagnosisDate)}</div>`
+        : '';
       return `
         <tr>
           <td style="white-space:nowrap">${visitNumBadge(i, p.assessments.length)}&nbsp; ${fmtDate(a.date)}</td>
-          <td>${d.icd || '<span style="color:var(--text-placeholder)">Not specified</span>'}</td>
+          <td>${d.icd ? d.icd + finalBadge + finalDate : '<span style="color:var(--text-placeholder)">Not specified</span>'}</td>
           <td>${d.mhgap && d.mhgap.length ? `<div class="chip-list">${d.mhgap.map(x=>`<span class="data-chip">${x}</span>`).join('')}</div>` : '<span style="color:var(--text-placeholder)">—</span>'}</td>
           <td style="min-width:70px">${viewBtn(i)}</td>
         </tr>`;
@@ -3183,7 +3608,7 @@
     'General intervention',
   ];
   const REFERRAL_OPTIONS = [
-    'Emergency','Psychiatry','Neurology','Specialties','Pediatrics / Developmental',
+    'Psychiatry','Neurology','Specialties','Pediatrics / Developmental',
     'Psychologist','VAWC / BCPC','CSWDO','WCPU','School','Smoking cessation clinic',
     'MHSATOP','CHAMP specialty clinic','HC / SHC','Social hygiene clinic','Others'
   ];
@@ -3213,10 +3638,12 @@
     assessStep = 1;
     assessData = {
       date: new Date().toISOString().split('T')[0],
+      functionalImpairment: null,
+      status: 'Active',
       mse: { orientation: [], hallucinations: [], riskFactors: [], selfHarm: {} },
-      diagnosis: { mhgap: [] },
+      diagnosis: { mhgap: [], screenedMHTools: null, redFlags: '', mhgapAssessed: null },
       treatment: { psychosocial: [], meds: [] },
-      referral: { referTo: [] },
+      referral: { referTo: [], urgentReferral: null, referringFacility: '' },
     };
     document.getElementById('assessModal').classList.add('active');
     renderAssessStep();
@@ -3249,6 +3676,11 @@
     if (assessStep === 1) {
       title.textContent = (isFollowUp ? 'Follow-up consult' : 'New assessment') + ' · Step 1 of 3';
       body.innerHTML = renderAssessStep1();
+      const feCb = document.getElementById('a_firstEpisode');
+      if (feCb) {
+        feCb.closest('.cb-item').classList.toggle('checked', feCb.checked);
+        feCb.addEventListener('change', () => feCb.closest('.cb-item').classList.toggle('checked', feCb.checked));
+      }
       actions.innerHTML = `
         <button class="btn btn-default" id="aCancel">Cancel</button>
         <button class="btn btn-primary" id="aNext">Next: Examination →</button>
@@ -3297,7 +3729,7 @@
           <textarea id="a_cc_patient" rows="3" placeholder="In the patient's own words...">${a.cc_patient || ''}</textarea>
         </div>
         <div class="form-field">
-          <label><span class="req">*</span>Subjective notes from guardian</label>
+          <label>Subjective notes from guardian</label>
           <textarea id="a_cc_guardian" rows="3" placeholder="As reported by guardian or family...">${a.cc_guardian || ''}</textarea>
         </div>
       </div>
@@ -3307,11 +3739,12 @@
         <div class="form-field">
           <label>Onset</label>
           <input type="text" id="a_onset" placeholder="e.g. 3 weeks ago, gradual" value="${a.onset || ''}" />
+          <label class="cb-item" id="lbl_firstEpisode" style="display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;margin-top:8px;">
+            <input type="checkbox" id="a_firstEpisode" ${a.firstEpisode ? 'checked' : ''} style="width:14px;height:14px;accent-color:var(--primary);cursor:pointer;" />
+            First episode
+          </label>
         </div>
-        <div class="form-field">
-          <label>Reliability</label>
-          <input type="text" id="a_reliability" placeholder="e.g. Reliable historian" value="${a.reliability || ''}" />
-        </div>
+        <div class="form-field"></div>
       </div>
       <div class="form-row single">
         <div class="form-field">
@@ -3331,6 +3764,12 @@
           <textarea id="a_familyHistory" rows="2" placeholder="Relevant MH or medical history in family...">${a.familyHistory || ''}</textarea>
         </div>
       </div>
+      <div class="form-row single">
+        <div class="form-field">
+          <label>Substance abuse history</label>
+          <textarea id="a_substanceHistory" rows="2" placeholder="Type of substance, frequency, duration, last use, prior treatment...">${a.substanceHistory || ''}</textarea>
+        </div>
+      </div>
     `;
   }
 
@@ -3339,23 +3778,22 @@
     assessData.cc_patient = document.getElementById('a_cc_patient').value.trim();
     assessData.cc_guardian = document.getElementById('a_cc_guardian').value.trim();
     assessData.onset = document.getElementById('a_onset').value.trim();
-    assessData.reliability = document.getElementById('a_reliability').value.trim();
+    assessData.firstEpisode = document.getElementById('a_firstEpisode').checked;
     assessData.hpi = document.getElementById('a_hpi').value.trim();
     assessData.pastMedical = document.getElementById('a_pastMedical').value.trim();
     assessData.familyHistory = document.getElementById('a_familyHistory').value.trim();
+    assessData.substanceHistory = document.getElementById('a_substanceHistory').value.trim();
   }
 
   function goAssessStep2() {
     clearValidationError();
     const date = document.getElementById('a_date').value;
     const ccp = document.getElementById('a_cc_patient').value.trim();
-    const ccg = document.getElementById('a_cc_guardian').value.trim();
     const missing = [];
     if (!date) missing.push('a_date');
     if (!ccp) missing.push('a_cc_patient');
-    if (!ccg) missing.push('a_cc_guardian');
     if (missing.length) {
-      showValidationError('Please complete required fields: Date of assessment and both chief complaint notes.', missing);
+      showValidationError('Please complete required fields: Date of assessment and chief complaint (patient).', missing);
       return;
     }
     saveAssessStep1();
@@ -3462,12 +3900,22 @@
           </label>
         </div>
         <div id="selfHarmReveal" class="conditional-reveal" style="${(sh.attempted || sh.current) ? '' : 'display:none'}">
-          <label>Method of self-harm</label>
+          <label><span class="req">*</span>Risk level</label>
+          <div id="sh_riskLevelGroup" style="display:flex;gap:8px;margin-bottom:4px">
+            ${['Low','Moderate','High'].map(level => `
+              <label class="cb-item ${sh.riskLevel === level ? (level === 'High' ? 'highlight-suicide' : 'checked') : ''}" data-risk-label="${level}" style="display:flex;align-items:center;gap:6px;padding:7px 14px;cursor:pointer;${level === 'High' && sh.riskLevel === level ? 'border-color:var(--danger);background:#FEF0F0;color:var(--danger);font-weight:600;' : ''}">
+                <input type="radio" name="sh_riskLevel" value="${level}" ${sh.riskLevel === level ? 'checked' : ''} style="width:13px;height:13px;accent-color:${level === 'High' ? 'var(--danger)' : 'var(--primary)'};cursor:pointer;" />
+                ${level}
+              </label>`).join('')}
+          </div>
+          <span id="sh_riskLevelError" class="radio-group-invalid-label" style="display:none;margin-bottom:8px">This field is required.</span>
+          <div id="highRiskWarning" style="${sh.riskLevel === 'High' ? '' : 'display:none'};background:#FEF0F0;border:1.5px solid var(--danger);border-radius:var(--radius);padding:12px 14px;margin-bottom:12px;font-size:13px;color:var(--danger);line-height:1.55;">
+            <strong>⚠ HIGH RISK = EMERGENCY REFERRAL.</strong> Do not allow the patient to leave alone. Contact next of kin and arrange immediate hospital admission. If with suicide attempt or currently suicidal, check <em>Self-harm / suicide attempt</em> in the MHGAP condition.
+          </div>
+          <label><span class="req">*</span>Method of self-harm</label>
           <input type="text" id="sh_method" value="${sh.method || ''}" placeholder="e.g. overdose, laceration" />
-          <label>Suicide risk assessment</label>
-          <textarea id="sh_risk" rows="2" placeholder="Ideation, plan, intent, means, timing, protective factors...">${sh.riskAssessment || ''}</textarea>
-          <label>General remarks</label>
-          <textarea id="sh_remarks" rows="2" placeholder="Additional observations...">${sh.remarks || ''}</textarea>
+          <label>Notes / remarks</label>
+          <textarea id="sh_remarks" rows="2" placeholder="Ideation, plan, intent, means, timing, protective factors, additional observations...">${sh.remarks || ''}</textarea>
         </div>
       </div>
 
@@ -3478,6 +3926,15 @@
           <span>Homicidal ideation flagged</span>
         </label>
         <div id="homicidalReveal" class="conditional-reveal" style="${m.homicidal ? '' : 'display:none'}">
+          <label><span class="req">*</span>Risk level</label>
+          <div id="hom_riskLevelGroup" style="display:flex;gap:8px;margin-bottom:4px">
+            ${['Low','Moderate','High'].map(level => `
+              <label class="cb-item ${m.homicidalRiskLevel === level ? (level === 'High' ? 'highlight-suicide' : 'checked') : ''}" data-hom-risk-label="${level}" style="display:flex;align-items:center;gap:6px;padding:7px 14px;cursor:pointer;">
+                <input type="radio" name="hom_riskLevel" value="${level}" ${m.homicidalRiskLevel === level ? 'checked' : ''} style="width:13px;height:13px;accent-color:${level === 'High' ? 'var(--danger)' : 'var(--primary)'};cursor:pointer;" />
+                ${level}
+              </label>`).join('')}
+          </div>
+          <span id="hom_riskLevelError" class="radio-group-invalid-label" style="display:none;margin-bottom:8px">This field is required.</span>
           <label>Remarks</label>
           <textarea id="mse_homicidalRemarks" rows="2" placeholder="Target, plan, specificity, protective factors...">${m.homicidalRemarks || ''}</textarea>
         </div>
@@ -3486,6 +3943,27 @@
       <div class="mse-item">
         <div class="mse-label"><span class="mse-num">14</span>Risk factors and psychosocial concerns</div>
         ${mseCheckGroup('riskFactors', RISK_FACTORS, m.riskFactors)}
+      </div>
+
+      <div class="form-section-title" style="margin-top:20px">Physical examination</div>
+      <div class="form-row single">
+        <div class="form-field">
+          <label>Physical examination findings</label>
+          <textarea id="mse_physicalExam" rows="3" placeholder="Vital signs, general appearance, relevant physical findings...">${m.physicalExam || ''}</textarea>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label class="cb-item ${m.labTestDone ? 'checked' : ''}" id="lbl_labTestDone" style="display:flex;align-items:center;gap:8px;padding:9px 14px;cursor:pointer;max-width:260px;">
+            <input type="checkbox" id="mse_labTestDone" ${m.labTestDone ? 'checked' : ''} style="width:14px;height:14px;accent-color:var(--primary);cursor:pointer;" />
+            Basic laboratory test done?
+          </label>
+          <div id="labTestReveal" style="${m.labTestDone ? '' : 'display:none'};margin-top:10px;">
+            <label><span class="req">*</span>Laboratory test findings</label>
+            <textarea id="mse_labFindings" rows="2" placeholder="CBC, urinalysis, blood chemistry, other findings...">${m.labFindings || ''}</textarea>
+          </div>
+        </div>
+        <div class="form-field"></div>
       </div>
     `;
   }
@@ -3523,10 +4001,59 @@
     };
     sha.addEventListener('change', toggleShReveal);
     shc.addEventListener('change', toggleShReveal);
+
+    document.querySelectorAll('input[name="sh_riskLevel"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        const grp = document.getElementById('sh_riskLevelGroup');
+        const err = document.getElementById('sh_riskLevelError');
+        if (grp) grp.classList.remove('radio-group-invalid');
+        if (err) err.style.display = 'none';
+        const isHigh = radio.value === 'High';
+        document.getElementById('highRiskWarning').style.display = isHigh ? '' : 'none';
+        document.querySelectorAll('[data-risk-label]').forEach(lbl => {
+          const lvl = lbl.dataset.riskLabel;
+          const selected = lbl.querySelector('input').checked;
+          lbl.classList.remove('checked', 'highlight-suicide');
+          lbl.style.borderColor = '';
+          lbl.style.background = '';
+          lbl.style.color = '';
+          lbl.style.fontWeight = '';
+          if (selected) {
+            if (lvl === 'High') {
+              lbl.classList.add('highlight-suicide');
+            } else {
+              lbl.classList.add('checked');
+            }
+          }
+        });
+      });
+    });
+
+    const labCb = document.getElementById('mse_labTestDone');
+    if (labCb) labCb.addEventListener('change', () => {
+      labCb.closest('.cb-item').classList.toggle('checked', labCb.checked);
+      document.getElementById('labTestReveal').style.display = labCb.checked ? '' : 'none';
+    });
+
     const hom = document.getElementById('mse_homicidal');
     hom.addEventListener('change', () => {
       document.getElementById('homicidalReveal').style.display = hom.checked ? '' : 'none';
       document.getElementById('homicidalLabel').classList.toggle('highlight-suicide', hom.checked);
+    });
+
+    document.querySelectorAll('input[name="hom_riskLevel"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        const grp = document.getElementById('hom_riskLevelGroup');
+        const err = document.getElementById('hom_riskLevelError');
+        if (grp) grp.classList.remove('radio-group-invalid');
+        if (err) err.style.display = 'none';
+        document.querySelectorAll('[data-hom-risk-label]').forEach(lbl => {
+          const lvl = lbl.dataset.homRiskLabel;
+          const selected = lbl.querySelector('input').checked;
+          lbl.classList.remove('checked', 'highlight-suicide');
+          if (selected) lbl.classList.add(lvl === 'High' ? 'highlight-suicide' : 'checked');
+        });
+      });
     });
   }
 
@@ -3556,19 +4083,81 @@
     m.affect = readMseRadio('affect');
     m.thoughtProcess = readMseRadio('thoughtProcess');
     m.hallucinations = readMseCheck('hallucinations');
+    const riskLevelEl = document.querySelector('input[name="sh_riskLevel"]:checked');
     m.selfHarm = {
       attempted: document.getElementById('sh_attempted').checked,
       current: document.getElementById('sh_current').checked,
       method: document.getElementById('sh_method') ? document.getElementById('sh_method').value.trim() : '',
-      riskAssessment: document.getElementById('sh_risk') ? document.getElementById('sh_risk').value.trim() : '',
+      riskLevel: riskLevelEl ? riskLevelEl.value : '',
       remarks: document.getElementById('sh_remarks') ? document.getElementById('sh_remarks').value.trim() : '',
     };
     m.homicidal = document.getElementById('mse_homicidal').checked;
+    const homRiskEl = document.querySelector('input[name="hom_riskLevel"]:checked');
+    m.homicidalRiskLevel = homRiskEl ? homRiskEl.value : '';
     m.homicidalRemarks = document.getElementById('mse_homicidalRemarks') ? document.getElementById('mse_homicidalRemarks').value.trim() : '';
     m.riskFactors = readMseCheck('riskFactors');
+    m.physicalExam = document.getElementById('mse_physicalExam') ? document.getElementById('mse_physicalExam').value.trim() : '';
+    m.labTestDone = document.getElementById('mse_labTestDone') ? document.getElementById('mse_labTestDone').checked : false;
+    m.labFindings = document.getElementById('mse_labFindings') ? document.getElementById('mse_labFindings').value.trim() : '';
   }
 
   function goAssessStep3() {
+    clearValidationError();
+    const sha = document.getElementById('sh_attempted');
+    const shc = document.getElementById('sh_current');
+    const hom = document.getElementById('mse_homicidal');
+    let hasError = false;
+
+    /* Clear previous inline errors */
+    ['sh_riskLevelGroup','hom_riskLevelGroup'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('radio-group-invalid');
+    });
+    ['sh_riskLevelError','hom_riskLevelError'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+
+    const missing = [];
+    const messages = [];
+
+    if (sha && shc && (sha.checked || shc.checked)) {
+      const riskLevel = document.querySelector('input[name="sh_riskLevel"]:checked');
+      const method = document.getElementById('sh_method');
+      if (!riskLevel) {
+        messages.push('Suicide / self-harm risk level');
+        const grp = document.getElementById('sh_riskLevelGroup');
+        const err = document.getElementById('sh_riskLevelError');
+        if (grp) grp.classList.add('radio-group-invalid');
+        if (err) err.style.display = '';
+        hasError = true;
+      }
+      if (!method || !method.value.trim()) {
+        missing.push('sh_method');
+        messages.push('Method of self-harm');
+        hasError = true;
+      }
+    }
+
+    if (hom && hom.checked && !document.querySelector('input[name="hom_riskLevel"]:checked')) {
+      messages.push('Homicidal risk level');
+      const grp = document.getElementById('hom_riskLevelGroup');
+      const err = document.getElementById('hom_riskLevelError');
+      if (grp) grp.classList.add('radio-group-invalid');
+      if (err) err.style.display = '';
+      hasError = true;
+    }
+
+    if (hasError) {
+      showValidationError('Please complete required fields: ' + messages.join(', ') + '.', missing);
+      return;
+    }
+    const labDone = document.getElementById('mse_labTestDone') && document.getElementById('mse_labTestDone').checked;
+    const labFindings = document.getElementById('mse_labFindings');
+    if (labDone && labFindings && !labFindings.value.trim()) {
+      showValidationError('Please enter the laboratory test findings.', ['mse_labFindings']);
+      return;
+    }
     saveAssessStep2();
     assessStep = 3;
     renderAssessStep();
@@ -3581,6 +4170,8 @@
     const r = assessData.referral;
     const sh = assessData.mse.selfHarm || {};
     const suicideFlagged = sh.attempted || sh.current;
+    const riskFlagged = suicideFlagged || assessData.mse.homicidal;
+    if (riskFlagged && d.screenedMHTools == null) d.screenedMHTools = true;
     const safetyPlanIdx = 4;
 
     const mhgapCB = MHGAP_CONDITIONS.map(c => `
@@ -3635,21 +4226,71 @@
         </div>
       ` : ''}
 
+      <div class="form-section-title">Functional assessment</div>
+      <div class="form-field" style="margin-bottom:20px">
+        <label style="margin-bottom:10px;display:block">Do the symptoms cause significant distress or impair daily functioning — affecting activities of daily living?</label>
+        <div style="display:flex;gap:8px">
+          <label class="cb-item ${assessData.functionalImpairment === true ? 'checked' : ''}" data-fi-label="Yes" style="display:flex;align-items:center;gap:6px;padding:7px 18px;cursor:pointer;">
+            <input type="radio" name="functionalImpairment" value="Yes" ${assessData.functionalImpairment === true ? 'checked' : ''} style="width:13px;height:13px;accent-color:var(--primary);cursor:pointer;" />
+            Yes
+          </label>
+          <label class="cb-item ${assessData.functionalImpairment === false ? 'checked' : ''}" data-fi-label="No" style="display:flex;align-items:center;gap:6px;padding:7px 18px;cursor:pointer;">
+            <input type="radio" name="functionalImpairment" value="No" ${assessData.functionalImpairment === false ? 'checked' : ''} style="width:13px;height:13px;accent-color:var(--primary);cursor:pointer;" />
+            No
+          </label>
+        </div>
+      </div>
+
       <div class="form-section-title">Working diagnosis</div>
       <div class="form-row">
         <div class="form-field">
-          <label>ICD-10 / 11 code</label>
+          <label>ICD-10 code <span class="hint" style="font-style:normal;margin-left:4px">(mental health)</span></label>
           <div class="ac-wrap">
             <input type="text" id="d_icd" autocomplete="off" placeholder="Type code or condition name to search…" value="${d.icd || ''}" />
             <div class="ac-dd" id="d_icd_dd"></div>
           </div>
-          <div class="hint">Search from ICD-10 MH conditions list, or type a custom code</div>
+          <div class="hint">Searches ICD-10 mental health codes (F00–F99)</div>
         </div>
         <div class="form-field"></div>
       </div>
+
+      <div class="form-field" style="margin-bottom:16px">
+        <label style="margin-bottom:8px;display:block">
+          Screened with Red Flags using MH Tools? <span class="hint" style="font-style:normal;margin-left:4px">(PHQ-9, GAD-7, HEADSSS, etc.)</span>
+          ${riskFlagged ? '<span class="badge" style="background:#FEF0F0;color:var(--danger);border:1px solid #FDE2E2;margin-left:6px;">Auto-selected: risk flagged</span>' : ''}
+        </label>
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <label class="cb-item ${d.screenedMHTools === true ? 'checked' : ''}" data-screened-label="Yes" style="display:flex;align-items:center;gap:6px;padding:7px 18px;cursor:pointer;">
+            <input type="radio" name="screenedMHTools" value="Yes" ${d.screenedMHTools === true ? 'checked' : ''} style="width:13px;height:13px;accent-color:var(--primary);cursor:pointer;" />
+            Yes
+          </label>
+          <label class="cb-item ${d.screenedMHTools === false ? 'checked' : ''}" data-screened-label="No" style="display:flex;align-items:center;gap:6px;padding:7px 18px;cursor:pointer;">
+            <input type="radio" name="screenedMHTools" value="No" ${d.screenedMHTools === false ? 'checked' : ''} style="width:13px;height:13px;accent-color:var(--primary);cursor:pointer;" />
+            No
+          </label>
+        </div>
+        <div id="redFlagsReveal" style="${d.screenedMHTools === true ? '' : 'display:none'}">
+          <label><span class="req">*</span>Red flags / screening findings</label>
+          <textarea id="d_redFlags" rows="2" placeholder="e.g. PHQ-9 score 18 (severe), active SI, GAD-7 score 14…">${d.redFlags || ''}</textarea>
+        </div>
+      </div>
+
       <div class="form-field" style="margin-bottom:20px">
-        <label>MHGAP condition <span class="hint" style="font-style:normal;margin-left:6px">(select all that apply)</span></label>
-        <div class="cb-grid" id="mhgapGroup">${mhgapCB}</div>
+        <label style="margin-bottom:8px;display:block">Assessed using MHGAP?</label>
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <label class="cb-item ${d.mhgapAssessed === true ? 'checked' : ''}" data-mhgap-assessed-label="Yes" style="display:flex;align-items:center;gap:6px;padding:7px 18px;cursor:pointer;">
+            <input type="radio" name="mhgapAssessed" value="Yes" ${d.mhgapAssessed === true ? 'checked' : ''} style="width:13px;height:13px;accent-color:var(--primary);cursor:pointer;" />
+            Yes
+          </label>
+          <label class="cb-item ${d.mhgapAssessed === false ? 'checked' : ''}" data-mhgap-assessed-label="No" style="display:flex;align-items:center;gap:6px;padding:7px 18px;cursor:pointer;">
+            <input type="radio" name="mhgapAssessed" value="No" ${d.mhgapAssessed === false ? 'checked' : ''} style="width:13px;height:13px;accent-color:var(--primary);cursor:pointer;" />
+            No
+          </label>
+        </div>
+        <div id="mhgapReveal" style="${d.mhgapAssessed === true ? '' : 'display:none'}">
+          <label>MHGAP condition <span class="hint" style="font-style:normal;margin-left:6px">(select all that apply)</span></label>
+          <div class="cb-grid" id="mhgapGroup">${mhgapCB}</div>
+        </div>
       </div>
 
       <div class="form-section-title">Psychosocial intervention</div>
@@ -3673,8 +4314,36 @@
 
       <div class="form-section-title" style="margin-top:24px;color:#7F77DD">Referral</div>
       <div class="form-field" style="margin-bottom:14px">
-        <label>Referred to <span class="hint" style="font-style:normal;margin-left:6px">(select all that apply)</span></label>
-        <div class="cb-grid" id="refGroup">${refCB}</div>
+        <label style="margin-bottom:10px;display:block">Urgent referral?</label>
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <label class="cb-item ${r.urgentReferral === true ? 'checked' : ''}" data-ur-label="Yes" style="display:flex;align-items:center;gap:6px;padding:7px 18px;cursor:pointer;">
+            <input type="radio" name="urgentReferral" value="Yes" ${r.urgentReferral === true ? 'checked' : ''} style="width:13px;height:13px;accent-color:var(--primary);cursor:pointer;" />
+            Yes
+          </label>
+          <label class="cb-item ${r.urgentReferral === false ? 'checked' : ''}" data-ur-label="No" style="display:flex;align-items:center;gap:6px;padding:7px 18px;cursor:pointer;">
+            <input type="radio" name="urgentReferral" value="No" ${r.urgentReferral === false ? 'checked' : ''} style="width:13px;height:13px;accent-color:var(--primary);cursor:pointer;" />
+            No
+          </label>
+        </div>
+        <div id="urgentReferralReveal" style="${r.urgentReferral === true ? '' : 'display:none'}">
+          <label>Referring facility</label>
+          <select id="r_referringFacility" onchange="document.getElementById('referringFacilityOther').style.display=this.value==='Others'?'':'none'">
+            <option value="">Select facility</option>
+            <option ${r.referringFacility === 'Rizal Medical Center' ? 'selected' : ''}>Rizal Medical Center</option>
+            <option ${r.referringFacility === 'National Center for Mental Health' ? 'selected' : ''}>National Center for Mental Health</option>
+            <option ${r.referringFacility === 'Pasig City General Hospital' ? 'selected' : ''}>Pasig City General Hospital</option>
+            <option ${r.referringFacility === 'Others' || (r.referringFacility && !['Rizal Medical Center','National Center for Mental Health','Pasig City General Hospital'].includes(r.referringFacility)) ? 'selected' : ''}>Others</option>
+          </select>
+          <div id="referringFacilityOther" style="${(r.referringFacility && !['Rizal Medical Center','National Center for Mental Health','Pasig City General Hospital',''].includes(r.referringFacility)) ? '' : 'display:none'};margin-top:8px">
+            <input type="text" id="r_referringFacilityOther" placeholder="Specify facility name…" value="${(!['Rizal Medical Center','National Center for Mental Health','Pasig City General Hospital','Others',''].includes(r.referringFacility||'')) ? r.referringFacility : ''}" />
+          </div>
+        </div>
+      </div>
+      <div id="referToSection" style="${r.urgentReferral === false ? '' : 'display:none'}">
+        <div class="form-field" style="margin-bottom:14px">
+          <label>Referred to <span class="hint" style="font-style:normal;margin-left:6px">(select all that apply)</span></label>
+          <div class="cb-grid" id="refGroup">${refCB}</div>
+        </div>
       </div>
       <div class="form-row">
         <div class="form-field">
@@ -3684,20 +4353,64 @@
         <div class="form-field"></div>
       </div>
 
-      <div class="form-section-title" style="margin-top:24px;color:#529B2E">Follow-up</div>
+      <div class="form-section-title" style="margin-top:24px;color:#529B2E">Status and Follow-up</div>
       <div class="form-row">
+        <div class="form-field">
+          <label>Status <span class="badge">Auto-selected</span></label>
+          <select id="r_status">
+            <option value="Active" ${(assessData.status || 'Active') === 'Active' ? 'selected' : ''}>Active</option>
+            <option value="Recovered" ${assessData.status === 'Recovered' ? 'selected' : ''}>Recovered</option>
+          </select>
+        </div>
         <div class="form-field">
           <label>Follow-up date</label>
           <input type="date" id="r_followUp" value="${r.followUp || ''}" />
           <div class="hint">Schedule the patient's next consultation</div>
         </div>
-        <div class="form-field"></div>
       </div>
     `;
   }
 
   function attachStep3Handlers_Assess() {
     attachAutocomplete('d_icd', ICD10_MH);
+
+    document.querySelectorAll('input[name="functionalImpairment"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        document.querySelectorAll('[data-fi-label]').forEach(lbl => {
+          lbl.classList.toggle('checked', lbl.querySelector('input').checked);
+        });
+      });
+    });
+
+    document.querySelectorAll('input[name="screenedMHTools"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        document.getElementById('redFlagsReveal').style.display = radio.value === 'Yes' && radio.checked ? '' : 'none';
+        document.querySelectorAll('[data-screened-label]').forEach(lbl => {
+          lbl.classList.toggle('checked', lbl.querySelector('input').checked);
+        });
+      });
+    });
+
+    document.querySelectorAll('input[name="mhgapAssessed"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        document.getElementById('mhgapReveal').style.display = radio.value === 'Yes' && radio.checked ? '' : 'none';
+        document.querySelectorAll('[data-mhgap-assessed-label]').forEach(lbl => {
+          lbl.classList.toggle('checked', lbl.querySelector('input').checked);
+        });
+      });
+    });
+
+    document.querySelectorAll('input[name="urgentReferral"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        const isYes = radio.value === 'Yes' && radio.checked;
+        document.getElementById('urgentReferralReveal').style.display = isYes ? '' : 'none';
+        document.getElementById('referToSection').style.display = isYes ? 'none' : '';
+        document.querySelectorAll('[data-ur-label]').forEach(lbl => {
+          lbl.classList.toggle('checked', lbl.querySelector('input').checked);
+        });
+      });
+    });
+
     document.querySelectorAll('#medTable .med-freq').forEach(sel => {
       sel.addEventListener('change', () => {
         const row = sel.closest('tr');
@@ -3740,6 +4453,11 @@
 
   function saveAssessStep3() {
     assessData.diagnosis.icd = document.getElementById('d_icd').value.trim();
+    const screenedEl = document.querySelector('input[name="screenedMHTools"]:checked');
+    assessData.diagnosis.screenedMHTools = screenedEl ? screenedEl.value === 'Yes' : null;
+    assessData.diagnosis.redFlags = document.getElementById('d_redFlags') ? document.getElementById('d_redFlags').value.trim() : '';
+    const mhgapAssessedEl = document.querySelector('input[name="mhgapAssessed"]:checked');
+    assessData.diagnosis.mhgapAssessed = mhgapAssessedEl ? mhgapAssessedEl.value === 'Yes' : null;
     assessData.diagnosis.mhgap = Array.from(document.querySelectorAll('.d_mhgap:checked')).map(cb => cb.value);
     assessData.treatment.psychosocial = Array.from(document.querySelectorAll('.t_psycho:checked')).map(cb => cb.value);
     assessData.treatment.meds = Array.from(document.querySelectorAll('#medTable tbody tr')).map(tr => {
@@ -3751,18 +4469,37 @@
         dispensed: qtyEl ? (parseInt(qtyEl.value) || freqToDispensed(freq)) : freqToDispensed(freq),
       };
     }).filter(m => m.name);
+    const fiEl = document.querySelector('input[name="functionalImpairment"]:checked');
+    assessData.functionalImpairment = fiEl ? fiEl.value === 'Yes' : null;
     assessData.referral.referTo = Array.from(document.querySelectorAll('.r_ref:checked')).map(cb => cb.value);
     assessData.referral.remarks = document.getElementById('r_remarks').value.trim();
     assessData.referral.followUp = document.getElementById('r_followUp').value;
+    const statusEl = document.getElementById('r_status');
+    if (statusEl) assessData.status = statusEl.value;
+    const urEl = document.querySelector('input[name="urgentReferral"]:checked');
+    assessData.referral.urgentReferral = urEl ? urEl.value === 'Yes' : null;
+    const rfEl = document.getElementById('r_referringFacility');
+    const rfOther = document.getElementById('r_referringFacilityOther');
+    assessData.referral.referringFacility = rfEl
+      ? (rfEl.value === 'Others' ? (rfOther && rfOther.value.trim() ? rfOther.value.trim() : 'Others') : rfEl.value)
+      : '';
   }
 
   function saveAssessment() {
+    clearValidationError();
+    const screenedEl = document.querySelector('input[name="screenedMHTools"]:checked');
+    const redFlagsEl = document.getElementById('d_redFlags');
+    if (screenedEl && screenedEl.value === 'Yes' && redFlagsEl && !redFlagsEl.value.trim()) {
+      showValidationError('Please enter the red flags / screening findings.', ['d_redFlags']);
+      return;
+    }
     saveAssessStep3();
     const p = PATIENTS[currentPatientIdx];
     if (!p.assessments) p.assessments = [];
     const entry = { ...assessData, provider: { ...currentUser } };
     delete entry._prev;
     p.assessments.push(entry);
+    if (assessData.status) p.status = assessData.status;
     isFollowUp = false;
     closeAssessModal();
     renderPatientDetail();
@@ -3778,13 +4515,14 @@
     const prev = p.assessments[p.assessments.length - 1];
     assessData = {
       date: new Date().toISOString().split('T')[0],
-      cc_patient:    prev.cc_patient    || '',
-      cc_guardian:   prev.cc_guardian   || '',
-      onset:         prev.onset         || '',
-      reliability:   prev.reliability   || '',
-      hpi:           prev.hpi           || '',
-      pastMedical:   prev.pastMedical   || '',
-      familyHistory: prev.familyHistory || '',
+      cc_patient:       prev.cc_patient       || '',
+      cc_guardian:      prev.cc_guardian      || '',
+      onset:            prev.onset            || '',
+      firstEpisode:     prev.firstEpisode     || false,
+      hpi:              prev.hpi              || '',
+      pastMedical:      prev.pastMedical      || '',
+      familyHistory:    prev.familyHistory    || '',
+      substanceHistory: prev.substanceHistory || '',
       mse: { orientation: [], hallucinations: [], riskFactors: (prev.mse && prev.mse.riskFactors) ? [...prev.mse.riskFactors] : [], selfHarm: {} },
       diagnosis: {
         icd:   prev.diagnosis ? prev.diagnosis.icd   : '',
@@ -3794,7 +4532,7 @@
         psychosocial: [],
         meds: prev.treatment && prev.treatment.meds ? prev.treatment.meds.map(m => ({ ...m })) : [],
       },
-      referral: { referTo: [], remarks: '', followUp: '' },
+      referral: { referTo: [], remarks: '', followUp: '', urgentReferral: null, referringFacility: '' },
       _prev: prev,
       _isFollowUp: true,
     };
@@ -3822,6 +4560,7 @@
 
   /* Helper: show previous value as a sub-label under a field label */
   /* ---- helpers ---- */
+  function todayISO() { return new Date().toISOString().split('T')[0]; }
   function fuSafeText(s) { return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
   /* Build a read-only history mini-table for the collapsible sections */
@@ -3867,8 +4606,9 @@
     const t = assessData.treatment;
     const r = assessData.referral;
     const prevTreat = prev.treatment || {};
+    const prevDiag  = prev.diagnosis  || {};
 
-    /* ── Complaints & History ── */
+    /* ── Complaints & History (collapsed, read-only history) ── */
     const complaintsTable = fuHistTable(p, [
       { label: 'Chief complaint (patient)', fn: a => fuSafeText((a.cc_patient||'').slice(0,120)) || '<span style="color:var(--text-placeholder)">—</span>' },
       { label: 'Chief complaint (guardian)', fn: a => fuSafeText((a.cc_guardian||'').slice(0,100)) || '<span style="color:var(--text-placeholder)">—</span>' },
@@ -3898,8 +4638,10 @@
           <div class="form-field">
             <label>Onset</label>
             <input type="text" id="nf_onset" placeholder="e.g. Worsening over 2 weeks" />
-            <label style="margin-top:10px;display:block">Reliability</label>
-            <input type="text" id="nf_reliability" placeholder="e.g. Reliable historian" />
+            <label class="cb-item" id="lbl_nf_firstEpisode" style="display:flex;align-items:center;gap:8px;padding:8px 12px;cursor:pointer;margin-top:10px;">
+              <input type="checkbox" id="nf_firstEpisode" style="width:14px;height:14px;accent-color:var(--primary);cursor:pointer;" />
+              First episode
+            </label>
           </div>
         </div>
         <div class="form-row">
@@ -3912,6 +4654,12 @@
             <textarea id="nf_familyHistory" rows="2" placeholder="New relevant history…"></textarea>
           </div>
         </div>
+        <div class="form-row single">
+          <div class="form-field">
+            <label>Substance abuse history <span class="hint" style="font-style:normal">(update only if changed)</span></label>
+            <textarea id="nf_substanceHistory" rows="2" placeholder="Type of substance, frequency, duration, last use…"></textarea>
+          </div>
+        </div>
       </div>`;
     const complaintsBody = complaintsTable + `
       <button type="button" class="fu-add-btn" id="btnAddComplaint">
@@ -3920,11 +4668,18 @@
       </button>
       ${complaintsNew}`;
 
-    /* ── Diagnosis ── */
+    /* ── Diagnosis: highlight last, then full history ── */
+    const lastDiagBanner = `
+      <div style="background:var(--primary-light);border:1.5px solid var(--border-light);border-radius:var(--radius);padding:12px 14px;margin-bottom:14px;">
+        <div style="font-size:11px;font-weight:600;color:var(--primary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Last diagnosis · ${fmtDate(prev.date)}</div>
+        <div style="font-size:13px;font-weight:500;color:var(--text-main);margin-bottom:${(prevDiag.mhgap||[]).length ? '8px' : '0'}">${prevDiag.icd ? fuSafeText(prevDiag.icd) : '<span style="color:var(--text-placeholder)">No ICD code recorded</span>'}</div>
+        ${(prevDiag.mhgap||[]).length ? `<div class="chip-list">${prevDiag.mhgap.map(x=>`<span class="data-chip" style="font-size:11px">${fuSafeText(x)}</span>`).join('')}</div>` : ''}
+      </div>`;
     const diagTable = fuHistTable(p, [
       { label: 'ICD code / description', maxW: 280, fn: a => {
         const d = a.diagnosis || {};
-        return d.icd ? fuSafeText(d.icd) : '<span style="color:var(--text-placeholder)">—</span>';
+        const badge = d.isFinalDiagnosis ? `<span style="display:inline-block;background:var(--primary);color:#fff;font-size:9px;font-weight:700;letter-spacing:.5px;padding:1px 6px;border-radius:10px;vertical-align:middle;margin-left:5px;text-transform:uppercase">Final Dx</span>` : '';
+        return d.icd ? fuSafeText(d.icd) + badge : '<span style="color:var(--text-placeholder)">—</span>';
       }},
       { label: 'MHGAP conditions', maxW: 220, fn: a => {
         const d = a.diagnosis || {};
@@ -3940,7 +4695,7 @@
       </label>`).join('');
     const diagNew = `
       <div class="fu-new-entry" id="newDiagForm">
-        <div class="fu-new-entry-title">Add / update diagnosis for this visit</div>
+        <div class="fu-new-entry-title">Update / Make Final Diagnosis</div>
         <div class="form-row">
           <div class="form-field">
             <label>ICD-10 / 11 code</label>
@@ -3948,7 +4703,7 @@
               <input type="text" id="nf_icd" autocomplete="off" placeholder="Type code or condition name to search…" />
               <div class="ac-dd" id="nf_icd_dd"></div>
             </div>
-            <div class="hint">Search from ICD-10 MH conditions list, or type a custom code</div>
+            <div class="hint">Searches ICD-10 mental health codes (F00–F99)</div>
           </div>
           <div class="form-field"></div>
         </div>
@@ -3956,15 +4711,27 @@
           <label>MHGAP conditions for this visit</label>
           <div class="cb-grid" id="nfMhgapGroup">${mhgapCB}</div>
         </div>
+        <div class="form-field" style="margin-top:10px">
+          <label class="cb-item" style="display:inline-flex;align-items:center;gap:8px;padding:9px 14px;cursor:pointer;font-weight:600;color:var(--primary);">
+            <input type="checkbox" id="nf_isFinalDx" style="width:14px;height:14px;accent-color:var(--primary);cursor:pointer;" />
+            Final Diagnosis
+          </label>
+          <div id="finalDxDateWrap" style="display:none;margin-top:10px">
+            <div class="form-field">
+              <label><span class="req">*</span>Final Diagnosis Date</label>
+              <input type="date" id="nf_finalDxDate" value="${todayISO()}" />
+            </div>
+          </div>
+        </div>
       </div>`;
-    const diagBody = diagTable + `
+    const diagBody = lastDiagBanner + diagTable + `
       <button type="button" class="fu-add-btn" id="btnAddDiag">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Add / update diagnosis for this visit
+        Update / Make Final Diagnosis
       </button>
       ${diagNew}`;
 
-    /* ── Psychosocial Issues / Concerns ── */
+    /* ── Psychosocial Issues / Concerns (collapsed) ── */
     const psyTable = fuHistTable(p, [
       { label: 'Psychosocial concerns', fn: a => {
         const rf = (a.mse && a.mse.riskFactors) || [];
@@ -3990,12 +4757,22 @@
       </button>
       ${psyNew}`;
 
-    /* ── Psychosocial Interventions (always visible) ── */
+    /* ── Psychosocial Interventions (collapsible) ── */
     const psychoCB = PSYCHOSOCIAL_INTERVENTIONS.map(c => `
       <label class="cb-item">
         <input type="checkbox" class="t_psycho" value="${c}" />
         <span>${c}</span>
       </label>`).join('');
+    const psychoIntBody = `
+      ${(prevTreat.psychosocial||[]).length ? `
+        <div class="prev-ref" style="margin-bottom:12px">
+          <div class="prev-ref-label">Previous visit · ${fmtDate(prev.date)}</div>
+          <div class="chip-list">${(prevTreat.psychosocial||[]).map(x=>`<span class="data-chip success" style="font-size:11px">${fuSafeText(x)}</span>`).join('')}</div>
+        </div>` : ''}
+      <div class="form-field">
+        <label>Select interventions for this visit</label>
+        <div class="cb-grid" id="psychoGroup">${psychoCB}</div>
+      </div>`;
 
     /* ── Med rows ── */
     const medRows = (t.meds.length > 0 ? t.meds : [{ name:'', freq:'OD', dispensed:30 }]).map((m, i) => `
@@ -4014,34 +4791,63 @@
       </label>`).join('');
 
     return `
-      <!-- DATE -->
-      <div class="form-section-title" style="margin-bottom:12px">Consultation details</div>
+      ${fuSection('complaints', 'Complaints &amp; History', `${p.assessments.length} visit${p.assessments.length!==1?'s':''}`, complaintsBody)}
+      ${fuSection('concerns', 'Psychosocial Issues / Concerns', `${p.assessments.length} record${p.assessments.length!==1?'s':''}`, psyBody)}
+      ${fuSection('diagnosis', 'Diagnosis', `${p.assessments.length} record${p.assessments.length!==1?'s':''}`, diagBody)}
+
+      <!-- CONSULTATION DETAILS -->
+      <div class="form-section-title" style="margin-top:4px">Consultation details</div>
       <div class="form-row" style="margin-bottom:18px">
         <div class="form-field">
           <label><span class="req">*</span>Consultation date</label>
           <input type="date" id="fu_date" value="${assessData.date}" />
         </div>
-        <div class="form-field"></div>
+        <div class="form-field" style="justify-content:flex-end;">
+          <label class="cb-item" id="lbl_rom" style="display:flex;align-items:center;gap:8px;padding:9px 14px;cursor:pointer;margin-top:auto;">
+            <input type="checkbox" id="fu_rom" style="width:14px;height:14px;accent-color:var(--primary);cursor:pointer;" />
+            Refill of Meds (ROM)
+          </label>
+        </div>
       </div>
 
-      ${fuSection('complaints', 'Complaints &amp; History', `${p.assessments.length} visit${p.assessments.length!==1?'s':''}`, complaintsBody)}
-      ${fuSection('diagnosis', 'Diagnosis', `${p.assessments.length} record${p.assessments.length!==1?'s':''}`, diagBody)}
-      ${fuSection('concerns', 'Psychosocial Issues / Concerns', `${p.assessments.length} record${p.assessments.length!==1?'s':''}`, psyBody)}
+      <!-- FUNCTIONAL ASSESSMENT -->
+      <div class="form-field" style="margin-bottom:16px">
+        <label style="margin-bottom:8px;display:block">Do the symptoms cause significant distress or impair daily functioning — affecting activities of daily living?</label>
+        <div style="display:flex;gap:8px">
+          <label class="cb-item" data-fi-label="Yes" style="display:flex;align-items:center;gap:6px;padding:7px 18px;cursor:pointer;">
+            <input type="radio" name="fu_functionalImpairment" value="Yes" style="width:13px;height:13px;accent-color:var(--primary);cursor:pointer;" />
+            Yes
+          </label>
+          <label class="cb-item" data-fi-label="No" style="display:flex;align-items:center;gap:6px;padding:7px 18px;cursor:pointer;">
+            <input type="radio" name="fu_functionalImpairment" value="No" style="width:13px;height:13px;accent-color:var(--primary);cursor:pointer;" />
+            No
+          </label>
+        </div>
+      </div>
 
-      <!-- PSYCHOSOCIAL INTERVENTIONS -->
-      <div class="form-section-title" style="margin-top:4px">Psychosocial interventions</div>
-      ${(prevTreat.psychosocial||[]).length ? `
-        <div class="prev-ref" style="margin-bottom:12px">
-          <div class="prev-ref-label">Previous visit · ${fmtDate(prev.date)}</div>
-          <div class="chip-list">${(prevTreat.psychosocial||[]).map(x=>`<span class="data-chip success" style="font-size:11px">${fuSafeText(x)}</span>`).join('')}</div>
-        </div>` : ''}
+      <!-- CLINICAL STATUS -->
       <div class="form-field" style="margin-bottom:20px">
-        <label>Select interventions for this visit</label>
-        <div class="cb-grid" id="psychoGroup">${psychoCB}</div>
+        <label style="margin-bottom:8px;display:block">Clinical status</label>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          ${[
+            ['Improved',  'Better engagement in work, social, or self-care activities.'],
+            ['No Change', 'Status quo maintained; symptoms stable but persistent.'],
+            ['Worsened',  'Increased difficulty performing daily tasks or increased distress.'],
+          ].map(([val, desc]) => `
+            <label class="cb-item" data-cs-label="${val}" style="display:flex;align-items:flex-start;gap:8px;padding:9px 14px;cursor:pointer;">
+              <input type="radio" name="fu_clinicalStatus" value="${val}" style="width:13px;height:13px;accent-color:var(--primary);cursor:pointer;margin-top:2px;flex-shrink:0;" />
+              <span><strong>${val}</strong> — ${desc}</span>
+            </label>`).join('')}
+        </div>
+      </div>
+
+      <!-- PSYCHOSOCIAL INTERVENTIONS (collapsible, hidden on ROM) -->
+      <div id="fuPsychoSection">
+        ${fuSection('psycho', 'Psychosocial interventions', '', psychoIntBody)}
       </div>
 
       <!-- PHARMACOLOGICAL -->
-      <div class="form-section-title">Pharmacological interventions</div>
+      <div class="form-section-title" style="margin-top:4px">Pharmacological interventions</div>
       <div class="form-field" style="margin-bottom:6px">
         <label>Medications for this visit <span class="hint" style="font-style:normal">(pre-filled from previous — update as needed)</span></label>
       </div>
@@ -4054,8 +4860,36 @@
       <!-- REFERRAL -->
       <div class="form-section-title" style="margin-top:24px;color:#7F77DD">Referral</div>
       <div class="form-field" style="margin-bottom:14px">
-        <label>Referred to</label>
-        <div class="cb-grid" id="refGroup">${refCB}</div>
+        <label style="margin-bottom:10px;display:block">Urgent referral?</label>
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <label class="cb-item" data-ur-label="Yes" style="display:flex;align-items:center;gap:6px;padding:7px 18px;cursor:pointer;">
+            <input type="radio" name="urgentReferral" value="Yes" style="width:13px;height:13px;accent-color:var(--primary);cursor:pointer;" />
+            Yes
+          </label>
+          <label class="cb-item" data-ur-label="No" style="display:flex;align-items:center;gap:6px;padding:7px 18px;cursor:pointer;">
+            <input type="radio" name="urgentReferral" value="No" style="width:13px;height:13px;accent-color:var(--primary);cursor:pointer;" />
+            No
+          </label>
+        </div>
+        <div id="urgentReferralReveal" style="display:none">
+          <label>Referring facility</label>
+          <select id="r_referringFacility" onchange="document.getElementById('referringFacilityOther').style.display=this.value==='Others'?'':'none'">
+            <option value="">Select facility</option>
+            <option>Rizal Medical Center</option>
+            <option>National Center for Mental Health</option>
+            <option>Pasig City General Hospital</option>
+            <option>Others</option>
+          </select>
+          <div id="referringFacilityOther" style="display:none;margin-top:8px">
+            <input type="text" id="r_referringFacilityOther" placeholder="Specify facility name…" />
+          </div>
+        </div>
+      </div>
+      <div id="referToSection" style="display:none">
+        <div class="form-field" style="margin-bottom:14px">
+          <label>Referred to <span class="hint" style="font-style:normal;margin-left:6px">(select all that apply)</span></label>
+          <div class="cb-grid" id="refGroup">${refCB}</div>
+        </div>
       </div>
       <div class="form-row">
         <div class="form-field">
@@ -4065,25 +4899,31 @@
         <div class="form-field"></div>
       </div>
 
-      <!-- FOLLOW-UP -->
-      <div class="form-section-title" style="margin-top:24px;color:#529B2E">Follow-up</div>
+      <!-- STATUS AND FOLLOW-UP -->
+      <div class="form-section-title" style="margin-top:24px;color:#529B2E">Status and Follow-up</div>
       <div class="form-row">
+        <div class="form-field">
+          <label>Status <span class="badge">Auto-selected</span></label>
+          <select id="r_status">
+            <option value="Active" selected>Active</option>
+            <option value="Recovered">Recovered</option>
+          </select>
+        </div>
         <div class="form-field">
           <label>Follow-up date</label>
           <input type="date" id="r_followUp" />
           <div class="hint">Schedule the patient's next consultation</div>
         </div>
-        <div class="form-field"></div>
       </div>`;
   }
 
   function attachFollowUpHandlers() {
-    /* Toggle collapsible sections */
+    /* Toggle collapsible sections — open Diagnosis by default */
     document.querySelectorAll('.fu-section-header').forEach(hdr => {
-      hdr.addEventListener('click', () => {
-        hdr.closest('.fu-section').classList.toggle('open');
-      });
+      hdr.addEventListener('click', () => hdr.closest('.fu-section').classList.toggle('open'));
     });
+    const diagSec = document.getElementById('fuSec_diagnosis');
+    if (diagSec) diagSec.classList.add('open');
 
     /* Add-new toggles */
     [
@@ -4112,6 +4952,56 @@
       if (!grp) return;
       grp.querySelectorAll('input[type="checkbox"]').forEach(cb => {
         cb.addEventListener('change', () => cb.closest('.cb-item').classList.toggle('checked', cb.checked));
+      });
+    });
+    const nfFe = document.getElementById('nf_firstEpisode');
+    if (nfFe) nfFe.addEventListener('change', () => nfFe.closest('.cb-item').classList.toggle('checked', nfFe.checked));
+
+    /* Final Diagnosis checkbox */
+    const finalDxCb = document.getElementById('nf_isFinalDx');
+    if (finalDxCb) {
+      finalDxCb.addEventListener('change', () => {
+        finalDxCb.closest('.cb-item').classList.toggle('checked', finalDxCb.checked);
+        document.getElementById('finalDxDateWrap').style.display = finalDxCb.checked ? '' : 'none';
+      });
+    }
+
+    /* ROM checkbox */
+    const romCb = document.getElementById('fu_rom');
+    if (romCb) {
+      romCb.addEventListener('change', () => {
+        romCb.closest('.cb-item').classList.toggle('checked', romCb.checked);
+        document.getElementById('fuPsychoSection').style.display = romCb.checked ? 'none' : '';
+      });
+    }
+
+    /* Functional impairment radios */
+    document.querySelectorAll('input[name="fu_functionalImpairment"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        document.querySelectorAll('[data-fi-label]').forEach(lbl => {
+          lbl.classList.toggle('checked', lbl.querySelector('input').checked);
+        });
+      });
+    });
+
+    /* Clinical status radios */
+    document.querySelectorAll('input[name="fu_clinicalStatus"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        document.querySelectorAll('[data-cs-label]').forEach(lbl => {
+          lbl.classList.toggle('checked', lbl.querySelector('input').checked);
+        });
+      });
+    });
+
+    /* Urgent referral radios */
+    document.querySelectorAll('input[name="urgentReferral"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        const isYes = radio.value === 'Yes' && radio.checked;
+        document.getElementById('urgentReferralReveal').style.display = isYes ? '' : 'none';
+        document.getElementById('referToSection').style.display = isYes ? 'none' : '';
+        document.querySelectorAll('[data-ur-label]').forEach(lbl => {
+          lbl.classList.toggle('checked', lbl.querySelector('input').checked);
+        });
       });
     });
 
@@ -4161,6 +5051,15 @@
       showValidationError('Please enter the consultation date.', ['fu_date']);
       return;
     }
+    /* Validate Final Diagnosis Date when checkbox is checked */
+    const finalDxCbEl = document.getElementById('nf_isFinalDx');
+    if (finalDxCbEl && finalDxCbEl.checked) {
+      const finalDxDateEl = document.getElementById('nf_finalDxDate');
+      if (!finalDxDateEl || !finalDxDateEl.value) {
+        showValidationError('Please enter the Final Diagnosis Date.', ['nf_finalDxDate']);
+        return;
+      }
+    }
     readFollowUpMeds();
 
     /* Complaints — only capture if the "Add" form was opened and has content */
@@ -4169,40 +5068,57 @@
 
     const entry = {
       date,
-      cc_patient:    nfVisible('newComplaintForm') ? g('nf_cc_patient')    : '',
-      cc_guardian:   nfVisible('newComplaintForm') ? g('nf_cc_guardian')   : '',
-      hpi:           nfVisible('newComplaintForm') ? g('nf_hpi')           : '',
-      onset:         nfVisible('newComplaintForm') ? g('nf_onset')         : '',
-      reliability:   nfVisible('newComplaintForm') ? g('nf_reliability')   : '',
-      pastMedical:   nfVisible('newComplaintForm') ? g('nf_pastMedical')   : '',
-      familyHistory: nfVisible('newComplaintForm') ? g('nf_familyHistory') : '',
+      cc_patient:       nfVisible('newComplaintForm') ? g('nf_cc_patient')       : '',
+      cc_guardian:      nfVisible('newComplaintForm') ? g('nf_cc_guardian')      : '',
+      hpi:              nfVisible('newComplaintForm') ? g('nf_hpi')              : '',
+      onset:            nfVisible('newComplaintForm') ? g('nf_onset')            : '',
+      firstEpisode:     nfVisible('newComplaintForm') ? (document.getElementById('nf_firstEpisode') ? document.getElementById('nf_firstEpisode').checked : false) : false,
+      pastMedical:      nfVisible('newComplaintForm') ? g('nf_pastMedical')      : '',
+      familyHistory:    nfVisible('newComplaintForm') ? g('nf_familyHistory')    : '',
+      substanceHistory: nfVisible('newComplaintForm') ? g('nf_substanceHistory') : '',
       mse: {
         riskFactors: nfVisible('newConcernsForm')
           ? Array.from(document.querySelectorAll('.nf_risk:checked')).map(cb => cb.value)
           : [],
         selfHarm: {}, orientation: [], hallucinations: [],
       },
-      diagnosis: {
-        icd:   nfVisible('newDiagForm') ? g('nf_icd') : '',
-        mhgap: nfVisible('newDiagForm')
-          ? Array.from(document.querySelectorAll('.nf_mhgap:checked')).map(cb => cb.value)
-          : [],
-      },
+      diagnosis: (() => {
+        const visible = nfVisible('newDiagForm');
+        const isFinal = visible && document.getElementById('nf_isFinalDx') && document.getElementById('nf_isFinalDx').checked;
+        return {
+          icd:   visible ? g('nf_icd') : '',
+          mhgap: visible ? Array.from(document.querySelectorAll('.nf_mhgap:checked')).map(cb => cb.value) : [],
+          isFinalDiagnosis: isFinal,
+          finalDiagnosisDate: isFinal ? (g('nf_finalDxDate') || todayISO()) : '',
+        };
+      })(),
       treatment: {
         psychosocial: Array.from(document.querySelectorAll('.t_psycho:checked')).map(cb => cb.value),
         meds: assessData.treatment.meds,
       },
-      referral: {
-        referTo:  Array.from(document.querySelectorAll('.r_ref:checked')).map(cb => cb.value),
-        remarks:  g('r_remarks'),
-        followUp: g('r_followUp'),
-      },
+      functionalImpairment: (() => { const el = document.querySelector('input[name="fu_functionalImpairment"]:checked'); return el ? el.value === 'Yes' : null; })(),
+      clinicalStatus: (() => { const el = document.querySelector('input[name="fu_clinicalStatus"]:checked'); return el ? el.value : ''; })(),
+      isROM: document.getElementById('fu_rom') ? document.getElementById('fu_rom').checked : false,
+      status: (() => { const el = document.getElementById('r_status'); return el ? el.value : 'Active'; })(),
+      referral: (() => {
+        const urEl = document.querySelector('input[name="urgentReferral"]:checked');
+        const rfEl = document.getElementById('r_referringFacility');
+        const rfOther = document.getElementById('r_referringFacilityOther');
+        return {
+          urgentReferral: urEl ? urEl.value === 'Yes' : null,
+          referringFacility: rfEl ? (rfEl.value === 'Others' ? (rfOther && rfOther.value.trim() ? rfOther.value.trim() : 'Others') : rfEl.value) : '',
+          referTo:  Array.from(document.querySelectorAll('.r_ref:checked')).map(cb => cb.value),
+          remarks:  g('r_remarks'),
+          followUp: g('r_followUp'),
+        };
+      })(),
       _isFollowUp: true,
       provider: { ...currentUser },
     };
 
     const p = PATIENTS[currentPatientIdx];
     p.assessments.push(entry);
+    if (entry.status) p.status = entry.status;
     isFollowUp = false;
     closeAssessModal();
     renderPatientDetail();
@@ -4272,12 +5188,13 @@
     const hasComplaints = a.cc_patient || a.cc_guardian || a.hpi || a.onset;
     const complaintsBody = hasComplaints ? `
       ${vdRow('Chief complaint — patient', a.cc_patient)}
-      ${vdRow('Chief complaint — guardian', a.cc_guardian)}
+      ${a.cc_guardian ? vdRow('Chief complaint — guardian', a.cc_guardian) : ''}
       ${vdRow('Onset', a.onset)}
-      ${vdRow('Reliability', a.reliability)}
+      ${a.firstEpisode ? `<div class="vd-row"><span class="k">First episode</span><span class="v"><span class="data-chip">Yes</span></span></div>` : ''}
       ${vdRow('History of present illness', a.hpi)}
       ${vdRow('Past medical history', a.pastMedical)}
       ${vdRow('Family history', a.familyHistory)}
+      ${a.substanceHistory ? vdRow('Substance abuse history', a.substanceHistory) : ''}
     ` : `<div style="padding:8px 0;font-size:13px;color:var(--text-placeholder);font-style:italic">No complaints recorded for this visit.</div>`;
 
     // ── MSE ──
@@ -4301,15 +5218,16 @@
     if (sh.attempted) selfHarmChips.push('With suicide attempt');
     if (sh.current)   selfHarmChips.push('Currently suicidal');
     const riskFlagged = selfHarmChips.length > 0 || mse.homicidal;
+    const riskLevelColor = sh.riskLevel === 'High' ? 'danger' : '';
     const riskBody = `
       <div class="vd-row">
         <span class="k">Self-harm / suicide</span>
         <span class="v">
           ${selfHarmChips.length
-            ? `<div class="chip-list" style="margin-bottom:6px">${selfHarmChips.map(x=>`<span class="data-chip danger">${x}</span>`).join('')}</div>` 
+            ? `<div class="chip-list" style="margin-bottom:6px">${selfHarmChips.map(x=>`<span class="data-chip danger">${x}</span>`).join('')}</div>`
             : '<span class="empty">Not flagged</span>'}
+          ${sh.riskLevel ? `<div style="font-size:12px;margin-top:4px"><strong>Risk level:</strong> <span class="data-chip ${riskLevelColor}">${sh.riskLevel}</span></div>` : ''}
           ${sh.method ? `<div style="font-size:12px;margin-top:4px"><strong>Method:</strong> ${sh.method}</div>` : ''}
-          ${sh.riskAssessment ? `<div style="font-size:12px;margin-top:4px"><strong>Risk assessment:</strong> ${sh.riskAssessment}</div>` : ''}
           ${sh.remarks ? `<div style="font-size:12px;margin-top:4px"><strong>Remarks:</strong> ${sh.remarks}</div>` : ''}
         </span>
       </div>
@@ -4317,16 +5235,27 @@
         <span class="k">Homicidal ideation</span>
         <span class="v">
           ${mse.homicidal ? `<span class="data-chip danger">Flagged</span>` : '<span class="empty">Not flagged</span>'}
+          ${mse.homicidalRiskLevel ? `<div style="font-size:12px;margin-top:4px"><strong>Risk level:</strong> <span class="data-chip ${mse.homicidalRiskLevel === 'High' ? 'danger' : ''}">${mse.homicidalRiskLevel}</span></div>` : ''}
           ${mse.homicidalRemarks ? `<div style="font-size:12px;margin-top:4px">${mse.homicidalRemarks}</div>` : ''}
         </span>
       </div>
-      ${chipRow('Psychosocial concerns', mse.riskFactors)}`;
+      ${chipRow('Psychosocial concerns', mse.riskFactors)}
+      ${mse.physicalExam ? vdRow('Physical examination findings', mse.physicalExam) : ''}
+      ${mse.labTestDone !== undefined ? `<div class="vd-row"><span class="k">Basic laboratory test</span><span class="v">${mse.labTestDone ? '<span class="data-chip">Done</span>' : '<span class="empty">Not done</span>'}</span></div>` : ''}
+      ${mse.labTestDone && mse.labFindings ? vdRow('Lab findings', mse.labFindings) : ''}`;
 
     // ── Diagnosis ──
-    const hasDiag = d.icd || (d.mhgap && d.mhgap.length);
+    const hasDiag = d.icd || (d.mhgap && d.mhgap.length) || d.screenedMHTools != null || d.mhgapAssessed != null;
+    const finalDxHtml = d.isFinalDiagnosis
+      ? `<div class="vd-row"><span class="k">Final diagnosis</span><span class="v"><span style="display:inline-flex;align-items:center;gap:8px"><span style="background:var(--primary);color:#fff;font-size:9px;font-weight:700;letter-spacing:.5px;padding:2px 8px;border-radius:10px;text-transform:uppercase">Final Dx</span>${d.finalDiagnosisDate ? `<span style="font-size:12px;color:var(--text-secondary)">Date: ${fmtDate(d.finalDiagnosisDate)}</span>` : ''}</span></span></div>`
+      : '';
     const diagBody = hasDiag ? `
-      ${vdRow('ICD-10 / 11 code', d.icd)}
-      ${chipRow('MHGAP conditions', d.mhgap)}
+      ${vdRow('ICD-10 code', d.icd)}
+      ${finalDxHtml}
+      ${d.screenedMHTools != null ? `<div class="vd-row"><span class="k">Screened with Red Flags / MH Tools</span><span class="v">${d.screenedMHTools ? '<span class="data-chip">Yes</span>' : '<span class="data-chip">No</span>'}</span></div>` : ''}
+      ${d.screenedMHTools && d.redFlags ? vdRow('Red flags / screening findings', d.redFlags) : ''}
+      ${d.mhgapAssessed != null ? `<div class="vd-row"><span class="k">Assessed using MHGAP</span><span class="v">${d.mhgapAssessed ? '<span class="data-chip">Yes</span>' : '<span class="data-chip">No</span>'}</span></div>` : ''}
+      ${d.mhgapAssessed ? chipRow('MHGAP conditions', d.mhgap) : ''}
     ` : `<div style="padding:8px 0;font-size:13px;color:var(--text-placeholder);font-style:italic">No diagnosis recorded for this visit.</div>`;
 
     // ── Treatment ──
@@ -4352,13 +5281,19 @@
     ` : `<div style="padding:8px 0;font-size:13px;color:var(--text-placeholder);font-style:italic">No treatment recorded for this visit.</div>`;
 
     // ── Referral ──
-    const hasReferral = r.referTo && r.referTo.length;
+    const hasReferral = r.referTo && r.referTo.length || r.urgentReferral;
     const referralBody = `
+      ${r.urgentReferral != null ? `<div class="vd-row"><span class="k">Urgent referral</span><span class="v">${r.urgentReferral ? '<span class="data-chip danger">Yes</span>' : '<span class="data-chip">No</span>'}</span></div>` : ''}
+      ${r.urgentReferral && r.referringFacility ? vdRow('Referring facility', r.referringFacility) : ''}
       ${chipRow('Referred to', r.referTo, 'warn')}
       ${vdRow('Remarks', r.remarks)}`;
 
     // ── Follow-up ──
+    const csColor = a.clinicalStatus === 'Improved' ? 'success' : a.clinicalStatus === 'Worsened' ? 'danger' : '';
     const followUpBody = `
+      ${a.status ? `<div class="vd-row"><span class="k">Status</span><span class="v"><span class="status-badge status-${statusSlug(a.status)}">${a.status}</span></span></div>` : ''}
+      ${a.clinicalStatus ? `<div class="vd-row"><span class="k">Clinical status</span><span class="v"><span class="data-chip ${csColor}">${a.clinicalStatus}</span></span></div>` : ''}
+      ${a.isROM ? `<div class="vd-row"><span class="k">Visit type</span><span class="v"><span class="data-chip">Refill of Meds (ROM)</span></span></div>` : ''}
       ${vdRow('Follow-up date', r.followUp ? fmtDate(r.followUp) : '')}`;
 
     // ── Provider meta ──
@@ -4380,6 +5315,11 @@
         </div>
       </div>`;
 
+    const functionalBody = `<div class="vd-row"><span class="k">Symptoms cause significant distress or impair daily functioning (ADL)</span><span class="v">${
+      a.functionalImpairment === true ? '<span class="data-chip">Yes</span>' :
+      a.functionalImpairment === false ? '<span class="data-chip">No</span>' :
+      '<span class="empty">Not recorded</span>'}</span></div>`;
+
     return metaBar + `
       ${vdSec('Complaints &amp; history', complaintsBody,
         { collapsed: !hasComplaints, info: hasComplaints ? '' : 'Not recorded' })}
@@ -4389,14 +5329,16 @@
         : vdSec('Mental state examination', mseBody)}
       ${vdSec('Risk assessment', riskBody,
         { danger: riskFlagged ? 'Risk flagged' : '' })}
+      ${vdSec('Functional assessment', functionalBody,
+        { collapsed: a.functionalImpairment == null, info: a.functionalImpairment == null ? 'Not recorded' : '' })}
       ${vdSec('Diagnosis', diagBody,
         { collapsed: !hasDiag, info: hasDiag ? '' : 'Not recorded' })}
       ${vdSec('Treatment', treatBody,
         { collapsed: !hasTreatment, info: hasTreatment ? '' : 'Not recorded' })}
       ${vdSec('Referral', referralBody,
         { collapsed: !hasReferral, info: hasReferral ? '' : 'No referral this visit' })}
-      ${vdSec('Follow-up', followUpBody,
-        { collapsed: !r.followUp, info: r.followUp ? fmtDate(r.followUp) : 'Not scheduled' })}
+      ${vdSec('Status and Follow-up', followUpBody,
+        { collapsed: false, info: a.status || (r.followUp ? fmtDate(r.followUp) : 'Not scheduled') })}
     `;
   }
 
@@ -4413,10 +5355,703 @@
     setTimeout(() => toast.classList.remove('show'), 3500);
   }
 
+  /* =================== REPORT GENERATION =================== */
+
+  const ALL_FACILITIES = [
+    'Bagong Katipunan Health Center',
+    'Bagong Ilog Health Center',
+    'Pinagbuhatan Health Center',
+    'Sta. Lucia Health Center',
+    'MHSATOP Pasig',
+  ];
+
+  function isLGUUser() {
+    return currentUser.role.includes('(LGU)');
+  }
+
+  function openReportModal() {
+    const modal = document.getElementById('reportModal');
+    const yearSel = document.getElementById('rpt_year');
+    const facilitySel = document.getElementById('rpt_facility');
+    const selectAllWrap = document.getElementById('rpt_selectall_wrap');
+    const selectAllCb = document.getElementById('rpt_selectall');
+
+    const currentYear = new Date().getFullYear().toString();
+    Array.from(yearSel.options).forEach(o => { o.selected = o.value === currentYear; });
+
+    facilitySel.innerHTML = '';
+    if (isLGUUser()) {
+      ALL_FACILITIES.forEach(f => {
+        const opt = document.createElement('option');
+        opt.value = f; opt.textContent = f;
+        facilitySel.appendChild(opt);
+      });
+      selectAllWrap.style.display = 'block';
+      selectAllCb.checked = false;
+      facilitySel.disabled = false;
+    } else {
+      const opt = document.createElement('option');
+      opt.value = currentUser.facility;
+      opt.textContent = currentUser.facility;
+      facilitySel.appendChild(opt);
+      selectAllWrap.style.display = 'none';
+    }
+
+    modal.classList.add('active');
+  }
+
+  function closeReportModal() {
+    document.getElementById('reportModal').classList.remove('active');
+  }
+
+  function fmtDateMDY(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr + 'T00:00:00');
+    if (isNaN(d)) return dateStr;
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${mm}/${dd}/${d.getFullYear()}`;
+  }
+
+  function ageGroup(age) {
+    const n = parseInt(age, 10);
+    if (isNaN(n)) return '';
+    if (n <= 9)  return 'A';
+    if (n <= 19) return 'B';
+    if (n <= 59) return 'C';
+    return 'D';
+  }
+
+  /* ---- Minimal XLSX builder (stored-mode ZIP + SpreadsheetML, no dependencies) ---- */
+
+  function xlsxCRC32(data) {
+    const t = new Int32Array(256);
+    for (let i = 0; i < 256; i++) {
+      let c = i;
+      for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      t[i] = c;
+    }
+    let crc = 0xFFFFFFFF;
+    for (let i = 0; i < data.length; i++) crc = t[(crc ^ data[i]) & 0xFF] ^ (crc >>> 8);
+    return (crc ^ 0xFFFFFFFF) >>> 0;
+  }
+
+  function xlsxLE16(n) { return [n & 0xFF, (n >> 8) & 0xFF]; }
+  function xlsxLE32(n) { return [n & 0xFF, (n >> 8) & 0xFF, (n >> 16) & 0xFF, (n >> 24) & 0xFF]; }
+  function xlsxEsc(s)  { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function xlsxEnc(s)  { return new TextEncoder().encode(s); }
+
+  function xlsxColLetter(n) {
+    let s = '';
+    while (n > 0) { n--; s = String.fromCharCode(65 + n % 26) + s; n = Math.floor(n / 26); }
+    return s;
+  }
+
+  function buildStylesXml() {
+    // Style index reference:
+    // 0=default, 1=title(22pt bold sky-blue bg), 2=LGU-header(12pt bold sky-blue wrap center),
+    // 3=section-blue, 4=section-pink, 5=section-purple, 6=col-header(Arial Narrow 11pt gray),
+    // 7=data-left-wrap, 8=data-center, 9=data-number, 10=period-header,
+    // 11=M-header(light-blue), 12=F-header(pink), 13=T-header(gray),
+    // 14=indicator-label, 15=section-label(gray bold), 16=number-cell-small, 17=empty-bordered
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><fonts count="8"><font><sz val="11"/><name val="Arial"/></font><font><b/><sz val="22"/><name val="Arial"/></font><font><b/><sz val="12"/><color rgb="FFFFFFFF"/><name val="Arial"/></font><font><b/><sz val="12"/><name val="Arial"/></font><font><sz val="12"/><name val="Arial"/></font><font><b/><sz val="11"/><name val="Arial Narrow"/></font><font><b/><sz val="8"/><name val="Arial"/></font><font><b/><sz val="9"/><name val="Arial"/></font></fonts><fills count="10"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFFFFFFF"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFC9DAF8"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFCFE2F3"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFEAD1DC"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFD9D2E9"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFCCCCCC"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FF4472C4"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFDCE6F1"/></patternFill></fill></fills><borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FF000000"/></left><right style="thin"><color rgb="FF000000"/></right><top style="thin"><color rgb="FF000000"/></top><bottom style="thin"><color rgb="FF000000"/></bottom><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="18"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="4" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment horizontal="left" vertical="top" wrapText="1"/></xf><xf numFmtId="0" fontId="3" fillId="4" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="3" fillId="4" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="3" fillId="5" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="3" fillId="6" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="5" fillId="7" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="4" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="4" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="4" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="3" fillId="4" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="6" fillId="3" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="6" fillId="5" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="6" fillId="7" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="4" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="3" fillId="7" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="left" vertical="center" wrapText="1"/></xf><xf numFmtId="0" fontId="6" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf><xf numFmtId="0" fontId="0" fillId="2" borderId="1" xfId="0" applyFill="1" applyBorder="1"/></cellXfs></styleSheet>`;
+  }
+
+  function buildXLSX(sheetName, rows, merges, options) {
+    options = options || {};
+    const colWidths  = options.colWidths  || [];
+    const rowHeights = options.rowHeights || {};
+    const stylesXml  = buildStylesXml();
+
+    // Shared strings table
+    const strings = [], strMap = {};
+    const si = s => {
+      s = String(s ?? '');
+      if (!(s in strMap)) { strMap[s] = strings.length; strings.push(s); }
+      return strMap[s];
+    };
+
+    // Cell helpers: cells may be plain values or {v, s} objects
+    const cVal  = c => (c != null && typeof c === 'object' && 'v' in c) ? c.v : c;
+    const cStyle = c => (c != null && typeof c === 'object' && 's' in c) ? c.s : null;
+
+    // Col widths XML
+    let colsXml = '';
+    if (colWidths.length) {
+      const els = colWidths.map((w, i) => w != null ? `<col min="${i+1}" max="${i+1}" width="${w}" customWidth="1"/>` : '').join('');
+      if (els) colsXml = `<cols>${els}</cols>`;
+    }
+
+    // Sheet XML
+    let sheetData = '';
+    rows.forEach((row, ri) => {
+      if (!row || row.every(c => { const v = cVal(c); return v == null || v === ''; })) return;
+      const rn = ri + 1;
+      const ht = rowHeights[rn];
+      const rowAttr = ht ? ` ht="${ht}" customHeight="1"` : '';
+      let rowXml = `<row r="${rn}"${rowAttr}>`;
+      row.forEach((cell, ci) => {
+        const v = cVal(cell);
+        if (v == null || v === '') return;
+        const s = cStyle(cell);
+        const ref = xlsxColLetter(ci + 1) + rn;
+        const sAttr = s != null ? ` s="${s}"` : '';
+        if (typeof v === 'number') {
+          rowXml += `<c r="${ref}"${sAttr}><v>${v}</v></c>`;
+        } else {
+          rowXml += `<c r="${ref}" t="s"${sAttr}><v>${si(v)}</v></c>`;
+        }
+      });
+      rowXml += '</row>';
+      sheetData += rowXml;
+    });
+
+    const mergeXml = (merges && merges.length)
+      ? `<mergeCells count="${merges.length}">${merges.map(m => `<mergeCell ref="${m}"/>`).join('')}</mergeCells>`
+      : '';
+
+    const sheetXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">${colsXml}<sheetData>${sheetData}</sheetData>${mergeXml}</worksheet>`;
+
+    const ssXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="${strings.length}" uniqueCount="${strings.length}">${strings.map(s => `<si><t xml:space="preserve">${xlsxEsc(s)}</t></si>`).join('')}</sst>`;
+
+    const ctXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/sharedStrings.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>`;
+
+    const relsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`;
+
+    const wbXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="${xlsxEsc(sheetName)}" sheetId="1" r:id="rId1"/></sheets></workbook>`;
+
+    const wbRelsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`;
+
+    // Package into stored-mode ZIP
+    function zipEntry(name, data) {
+      const nb = xlsxEnc(name);
+      const crc = xlsxCRC32(data);
+      const lh = new Uint8Array([
+        0x50,0x4B,0x03,0x04, 0x14,0x00, 0x00,0x00, 0x00,0x00,
+        0x00,0x00, 0x00,0x00,
+        ...xlsxLE32(crc), ...xlsxLE32(data.length), ...xlsxLE32(data.length),
+        ...xlsxLE16(nb.length), 0x00,0x00, ...nb,
+      ]);
+      return { nb, data, crc, lh };
+    }
+
+    const entries = [
+      zipEntry('[Content_Types].xml',        xlsxEnc(ctXml)),
+      zipEntry('_rels/.rels',                xlsxEnc(relsXml)),
+      zipEntry('xl/workbook.xml',            xlsxEnc(wbXml)),
+      zipEntry('xl/_rels/workbook.xml.rels', xlsxEnc(wbRelsXml)),
+      zipEntry('xl/worksheets/sheet1.xml',   xlsxEnc(sheetXml)),
+      zipEntry('xl/sharedStrings.xml',       xlsxEnc(ssXml)),
+      zipEntry('xl/styles.xml',              xlsxEnc(stylesXml)),
+    ];
+
+    const chunks = []; const offsets = []; let pos = 0;
+    for (const e of entries) {
+      offsets.push(pos);
+      chunks.push(e.lh, e.data);
+      pos += e.lh.length + e.data.length;
+    }
+
+    const cdStart = pos; let cdSize = 0; const cdChunks = [];
+    entries.forEach((e, i) => {
+      const cd = new Uint8Array([
+        0x50,0x4B,0x01,0x02, 0x14,0x00, 0x14,0x00, 0x00,0x00, 0x00,0x00,
+        0x00,0x00, 0x00,0x00,
+        ...xlsxLE32(e.crc), ...xlsxLE32(e.data.length), ...xlsxLE32(e.data.length),
+        ...xlsxLE16(e.nb.length), 0x00,0x00, 0x00,0x00, 0x00,0x00, 0x00,0x00,
+        0x00,0x00,0x00,0x00, ...xlsxLE32(offsets[i]), ...e.nb,
+      ]);
+      cdChunks.push(cd);
+      cdSize += cd.length;
+    });
+
+    const eocd = new Uint8Array([
+      0x50,0x4B,0x05,0x06, 0x00,0x00, 0x00,0x00,
+      ...xlsxLE16(entries.length), ...xlsxLE16(entries.length),
+      ...xlsxLE32(cdSize), ...xlsxLE32(cdStart), 0x00,0x00,
+    ]);
+
+    const all = [...chunks, ...cdChunks, eocd];
+    const total = all.reduce((s, p) => s + p.length, 0);
+    const out = new Uint8Array(total);
+    let p2 = 0;
+    for (const chunk of all) { out.set(chunk, p2); p2 += chunk.length; }
+    return out;
+  }
+
+  /* ---- TCL Screening report data builder ---- */
+
+  function generateTCLScreeningXLSX(year, facilities) {
+    const S = (v, s) => ({v, s}); // styled cell
+    const rows = [];
+
+    // Row 1: title block
+    rows.push([
+      S('TARGET CLIENT LIST (TCL): MENTAL HEALTH PROGRAM\nScreening & Assessment', 1),
+      '', '', '',
+      S('Republic of the Philippines\nDEPARTMENT OF HEALTH\nMetro Manila Center for Health Development\n\nLOCAL GOVERNMENT UNIT OF PASIG CITY', 2),
+      '', '', '', '', '', '', '', '',
+    ]);
+
+    // Row 2: section group headers
+    rows.push([
+      S('', 17), S('BASIC IDENTIFYING INFORMATION', 3), '', '',
+      S('DEMOGRAPHIC-SOCIO-ECONOMIC PROFILE', 4), '', '', '', '',
+      S('MHGAP SCREENING / ASSESSMENT', 5), '', '', '',
+    ]);
+
+    // Row 3: column headers
+    rows.push([
+      S('No.', 6),
+      S('DATE OF ASSESSMENT\n(mm/dd/yyyy)', 6),
+      S('Serial Number', 6),
+      S('NAME OF PATIENT\n(Last Name, First Initial, Middle Initial)', 6),
+      S('COMPLETE ADDRESS', 6),
+      S('BIRTHDATE\n(mm/dd/yyyy)', 6),
+      S('AGE\n(In years)', 6),
+      S('SEX\n\nM - Male\nF - Female', 6),
+      S('Age Group\n\nA: 0-9 yo\nB: 10-19 yo\nC: 20-59 yo\nD: 60 yo and above', 6),
+      S('SCREENED WITH RED FLAGS USING MH Tools?\n(PHQ-9, GAD-7, HEADSSS, etc.)', 6),
+      S('ASSESSED USING MHGAP?', 6),
+      S('DATE OF INITIAL DIAGNOSIS', 6),
+      S('MENTAL HEALTH CONDITION BASED ON MHGAP', 6),
+    ]);
+
+    // Data rows — sorted by first assessment date in the selected year
+    const screeningEntries = PATIENTS.flatMap(p => {
+      if (!facilities.includes(p.facility)) return [];
+      if (!p.assessments || !p.assessments.length) return [];
+      const yearAssessments = p.assessments.filter(a => a.date && a.date.startsWith(year));
+      if (!yearAssessments.length) return [];
+      const a = yearAssessments.sort((x, y) => x.date.localeCompare(y.date))[0];
+      return [{ p, a }];
+    }).sort((x, y) => x.a.date.localeCompare(y.a.date));
+
+    let rowNo = 0;
+    screeningEntries.forEach(({ p, a }) => {
+      rowNo++;
+      const initials = [p.first ? p.first.charAt(0) + '.' : '', p.middle ? p.middle.charAt(0) + '.' : ''].filter(Boolean).join(' ');
+      const name = [p.last, initials].filter(Boolean).join(', ');
+      const mhgap = (a.diagnosis && a.diagnosis.mhgap && a.diagnosis.mhgap.length)
+        ? a.diagnosis.mhgap.join(', ') : '';
+      const diagDate = (a.diagnosis && a.diagnosis.finalDiagnosisDate)
+        ? fmtDateMDY(a.diagnosis.finalDiagnosisDate) : fmtDateMDY(a.date);
+
+      rows.push([
+        S(rowNo, 9),
+        S(fmtDateMDY(a.date), 8),
+        S(p.accession, 8),
+        S(name, 7),
+        S(p.address || p.barangay || '', 7),
+        S(fmtDateMDY(p.dob), 8),
+        S(p.age != null ? Number(p.age) : '', 9),
+        S(p.sex, 8),
+        S(ageGroup(p.age), 8),
+        S(1, 9),
+        S(mhgap ? 1 : 0, 9),
+        S(diagDate, 8),
+        S(mhgap, 7),
+      ]);
+    });
+
+    const merges = [
+      'A1:D1', 'E1:M1',
+      'B2:D2', 'E2:I2', 'J2:M2',
+    ];
+
+    const colWidths = [7.14, 21.29, 21.43, 31.71, 28.86, 13.71, 10, 12.14, 18, 13.86, 13.86, 13.86, 36.57];
+    const rowHeights = { 1: 99, 2: 21 };
+
+    return buildXLSX('TCL Screening & Assessment', rows, merges, { colWidths, rowHeights });
+  }
+
+  /* ---- TCL Intervention Monitoring report data builder ---- */
+
+  function generateTCLInterventionXLSX(year, facilities) {
+    const MAX_CONSULTS = 15;
+    const COL_COUNT    = 18 + MAX_CONSULTS * 2; // A–R + 15×(DATE+INTERVENTION) = 48 cols
+
+    const emptyRow = () => Array(COL_COUNT).fill('');
+
+    const ORDINALS = ['1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th',
+                      '11th','12th','13th','14th','15th'];
+
+    function interventionCode(a) {
+      const meds  = (a.treatment && a.treatment.meds)         || [];
+      const refs  = (a.referral  && a.referral.referTo)        || [];
+      const psych = (a.treatment && a.treatment.psychosocial)  || [];
+      if (meds.length  > 0) return 'PHR';
+      if (refs.length  > 0) return 'R';
+      if (psych.some(p => /counsel|brief psychosocial/i.test(p))) return 'C';
+      if (psych.length > 0) return 'PSY';
+      return 'C';
+    }
+
+    const S = (v, s) => ({v, s}); // styled cell
+    const rows = [];
+
+    // Row 1 — title block
+    const r1 = emptyRow();
+    r1[0] = S('TARGET CLIENT LIST (TCL): MENTAL HEALTH PROGRAM\nIntervention Monitoring', 1);
+    r1[4] = S('Republic of the Philippines\nDEPARTMENT OF HEALTH\nMetro Manila Center for Health Development\n\nLOCAL GOVERNMENT UNIT OF PASIG CITY', 2);
+    rows.push(r1);
+
+    // Row 2 — section group headers
+    const r2 = emptyRow();
+    r2[0]  = S('', 17);
+    r2[1]  = S('BASIC IDENTIFYING INFORMATION', 3);
+    r2[7]  = S('MENTAL HEALTH CONDITION', 3);
+    r2[12] = S('PHARMACOLOGICAL INTERVENTION', 4);
+    r2[18] = S('INTERVENTION MONITORING', 5);
+    r2[28] = S('INTERVENTION MONITORING', 5);
+    r2[38] = S('INTERVENTION MONITORING', 5);
+    rows.push(r2);
+
+    // Row 3 — column headers (A–R single-row; S–AV span rows 3–4 as group labels)
+    const r3 = emptyRow();
+    r3[0]  = S('No.', 6);
+    r3[1]  = S('DATE OF ASSESSMENT\n(mm/dd/yyyy)', 6);
+    r3[2]  = S('Serial Number', 6);
+    r3[3]  = S('NAME OF PATIENT\n(Last Name, First Initial, Middle Initial)', 6);
+    r3[4]  = S('AGE\n(In years)', 6);
+    r3[5]  = S('SEX\n\nM - Male\nF - Female', 6);
+    r3[6]  = S('Age Group\nA: 0-9 yo\nB: 10-19 yo\nC: 20-59 yo\nD: 60 yo and above', 6);
+    r3[7]  = S('DATE OF INITIAL DIAGNOSIS', 6);
+    r3[8]  = S('MENTAL HEALTH CONDITION BASED ON MHGAP', 6);
+    r3[9]  = S('DATE OF FINAL DIAGNOSIS', 6);
+    r3[10] = S('MENTAL HEALTH CONDITION BASED ON MHGAP', 6);
+    r3[11] = S('SPECIFIC DIAGNOSIS\nuse latest ICD Code\n(if available)', 6);
+    r3[12] = S('MEDICINE\n(1ST)', 6);
+    r3[13] = S('FREQUENCY', 6);
+    r3[14] = S('MEDICINE\n(2ND)', 6);
+    r3[15] = S('FREQUENCY', 6);
+    r3[16] = S('MEDICINE\n(3RD)', 6);
+    r3[17] = S('FREQUENCY', 6);
+    for (let i = 0; i < MAX_CONSULTS; i++) r3[18 + i * 2] = S(`${ORDINALS[i]} Consultation`, 10);
+    rows.push(r3);
+
+    // Row 4 — DATE / INTERVENTION sub-headers for consultation columns only
+    const r4 = emptyRow();
+    for (let i = 0; i < MAX_CONSULTS; i++) {
+      r4[18 + i * 2]     = S('DATE', 6);
+      r4[18 + i * 2 + 1] = S('INTERVENTION', 6);
+    }
+    rows.push(r4);
+
+    // Data rows — sorted by first assessment date in the selected year
+    const interventionEntries = PATIENTS.flatMap(p => {
+      if (!facilities.includes(p.facility)) return [];
+      if (!p.assessments || !p.assessments.length) return [];
+      const yearAssessments = p.assessments.filter(a => a.date && a.date.startsWith(year));
+      if (!yearAssessments.length) return [];
+      return [p];
+    }).sort((pa, pb) => {
+      const dateA = pa.assessments.filter(a => a.date && a.date.startsWith(year)).sort((x,y) => x.date.localeCompare(y.date))[0].date;
+      const dateB = pb.assessments.filter(a => a.date && a.date.startsWith(year)).sort((x,y) => x.date.localeCompare(y.date))[0].date;
+      return dateA.localeCompare(dateB);
+    });
+
+    let rowNo = 0;
+    interventionEntries.forEach(p => {
+      const sorted   = [...p.assessments].sort((a, b) => a.date.localeCompare(b.date));
+      const firstA   = sorted[0];
+      const lastA    = sorted[sorted.length - 1];
+      const finalDxA = [...sorted].reverse().find(a => a.diagnosis && a.diagnosis.isFinalDiagnosis) || lastA;
+      const withMeds = [...sorted].reverse().find(a => a.treatment && a.treatment.meds && a.treatment.meds.length);
+      const meds     = withMeds ? withMeds.treatment.meds : [];
+
+      const initials     = [p.first ? p.first.charAt(0) + '.' : '', p.middle ? p.middle.charAt(0) + '.' : ''].filter(Boolean).join(' ');
+      const name         = [p.last, initials].filter(Boolean).join(', ');
+      const initialMhgap = (firstA.diagnosis && firstA.diagnosis.mhgap) ? firstA.diagnosis.mhgap.join(', ') : '';
+      const finalMhgap   = (finalDxA.diagnosis && finalDxA.diagnosis.mhgap) ? finalDxA.diagnosis.mhgap.join(', ') : initialMhgap;
+      const icd          = (finalDxA.diagnosis && finalDxA.diagnosis.icd) || '';
+      const finalDxDate  = (finalDxA.diagnosis && finalDxA.diagnosis.finalDiagnosisDate)
+        ? fmtDateMDY(finalDxA.diagnosis.finalDiagnosisDate) : '';
+
+      rowNo++;
+      const dr = emptyRow();
+      dr[0]  = S(rowNo, 9);
+      dr[1]  = S(fmtDateMDY(firstA.date), 8);
+      dr[2]  = S(p.accession, 8);
+      dr[3]  = S(name, 7);
+      dr[4]  = S(p.age != null ? Number(p.age) : '', 9);
+      dr[5]  = S(p.sex, 8);
+      dr[6]  = S(ageGroup(p.age), 8);
+      dr[7]  = S(fmtDateMDY(firstA.date), 8);
+      dr[8]  = S(initialMhgap, 7);
+      dr[9]  = S(finalDxDate, 8);
+      dr[10] = S(finalMhgap, 7);
+      dr[11] = S(icd, 7);
+      dr[12] = S(meds[0] ? meds[0].name : '', 7);
+      dr[13] = S(meds[0] ? meds[0].freq : '', 8);
+      dr[14] = S(meds[1] ? meds[1].name : '', 7);
+      dr[15] = S(meds[1] ? meds[1].freq : '', 8);
+      dr[16] = S(meds[2] ? meds[2].name : '', 7);
+      dr[17] = S(meds[2] ? meds[2].freq : '', 8);
+
+      sorted.slice(0, MAX_CONSULTS).forEach((a, i) => {
+        dr[18 + i * 2]     = S(fmtDateMDY(a.date), 8);
+        dr[18 + i * 2 + 1] = S(interventionCode(a), 8);
+      });
+
+      rows.push(dr);
+    });
+
+    // Merge cells — columns A–R span rows 3–4; consultation group headers span 2 cols in row 3
+    const merges = [
+      'A1:D1', 'E1:AV1',
+      'B2:D2', 'E2:G2', 'H2:L2', 'M2:R2', 'S2:AB2', 'AC2:AL2', 'AM2:AV2',
+      'A3:A4', 'B3:B4', 'C3:C4', 'D3:D4', 'E3:E4', 'F3:F4', 'G3:G4',
+      'H3:H4', 'I3:I4', 'J3:J4', 'K3:K4', 'L3:L4',
+      'M3:M4', 'N3:N4', 'O3:O4', 'P3:P4', 'Q3:Q4', 'R3:R4',
+      'S3:T3',  'U3:V3',  'W3:X3',  'Y3:Z3',  'AA3:AB3',
+      'AC3:AD3','AE3:AF3','AG3:AH3','AI3:AJ3','AK3:AL3',
+      'AM3:AN3','AO3:AP3','AQ3:AR3','AS3:AT3','AU3:AV3',
+    ];
+
+    // A=7.14, B=21.29, C=21.43, D=31.71, E-G=10/8/14, H-L=16/22/16/22/22, M-R=18/12/18/12/18/12, then 15 consult pairs DATE=14/INTERVENTION=12
+    const colWidths = [7.14, 21.29, 21.43, 31.71, 10, 8, 14, 16, 22, 16, 22, 22, 18, 12, 18, 12, 18, 12,
+      14, 12, 14, 12, 14, 12, 14, 12, 14, 12, 14, 12, 14, 12, 14, 12, 14, 12, 14, 12, 14, 12, 14, 12, 14, 12, 14, 12, 14, 12];
+    const rowHeights = { 1: 99, 2: 21, 3: 27.75, 4: 38.25 };
+
+    return buildXLSX('TCL Intervention Monitoring', rows, merges, { colWidths, rowHeights });
+  }
+
+  /* ---- MMCHD Quarterly MH Screening & Assessment ---- */
+
+  function generateMMCHDQuarterlyXLSX(year, facilities) {
+    const COL = 52; // A–AZ
+    const MONTH_COLS = [1,4,7,13,16,19,25,28,31,37,40,43]; // start col for each month (0-indexed)
+    const QTR_COLS   = [10,22,34,46];                       // Q1–Q4 start cols
+    const ANN_COL    = 49;                                  // Annual start col
+    const MONTH_NAMES = ['January','February','March','April','May','June',
+                         'July','August','September','October','November','December'];
+
+    // All M/F/T starting column indices (months + quarters + annual)
+    const ALL_MFT_STARTS = [1,4,7,10,13,16,19,22,25,28,31,34,37,40,43,46,49];
+
+    const MHGAP_KEYS = [
+      { key: 'depression',      test: c => /^depression/i.test(c) },
+      { key: 'anxiety',         test: c => /^anxiety/i.test(c) },
+      { key: 'psychosis',       test: c => /^psychosis/i.test(c) },
+      { key: 'epilepsy',        test: c => /^epilepsy/i.test(c) },
+      { key: 'childAdolescent', test: c => /^child/i.test(c) },
+      { key: 'dementia',        test: c => /^dementia/i.test(c) },
+      { key: 'selfHarm',        test: c => /^self.harm/i.test(c) },
+      { key: 'substanceUse',    test: c => /^disorder.*substance/i.test(c) },
+      { key: 'otherMH',         test: c => /^other/i.test(c) },
+    ];
+
+    const ALL_KEYS = ['screened','redFlags','mhgap',
+                      'age0_9','age10_19','age20_59','age60plus',
+                      ...MHGAP_KEYS.map(k => k.key)];
+
+    // counts[key][month] = { m, f }
+    const counts = {};
+    ALL_KEYS.forEach(k => { counts[k] = Array.from({length:12}, () => ({m:0, f:0})); });
+
+    PATIENTS.forEach(p => {
+      if (!facilities.includes(p.facility)) return;
+      if (!p.assessments || !p.assessments.length) return;
+      const yearA = p.assessments.filter(a => a.date && a.date.startsWith(year));
+      if (!yearA.length) return;
+
+      const first = [...yearA].sort((a,b) => a.date.localeCompare(b.date))[0];
+      const month = parseInt(first.date.slice(5,7), 10) - 1;
+      const sx    = p.sex === 'M' ? 'm' : 'f';
+
+      counts.screened[month][sx]++;
+      counts.redFlags[month][sx]++;
+
+      const mhgap = (first.diagnosis && first.diagnosis.mhgap) || [];
+      if (mhgap.length) counts.mhgap[month][sx]++;
+
+      const age = parseInt(p.age, 10);
+      if      (age <= 9)  counts.age0_9[month][sx]++;
+      else if (age <= 19) counts.age10_19[month][sx]++;
+      else if (age <= 59) counts.age20_59[month][sx]++;
+      else                counts.age60plus[month][sx]++;
+
+      mhgap.forEach(cond => {
+        for (const { key, test } of MHGAP_KEYS) {
+          if (test(cond)) { counts[key][month][sx]++; break; }
+        }
+      });
+    });
+
+    function indicatorRow(label, key) {
+      const row = Array(COL).fill('');
+      row[0] = label;
+      const mc = counts[key];
+      for (let m = 0; m < 12; m++) {
+        const c = MONTH_COLS[m];
+        row[c] = mc[m].m; row[c+1] = mc[m].f; row[c+2] = mc[m].m + mc[m].f;
+      }
+      [[0,1,2],[3,4,5],[6,7,8],[9,10,11]].forEach(([a,b,c], qi) => {
+        const qc = QTR_COLS[qi];
+        const mT = mc[a].m+mc[b].m+mc[c].m, fT = mc[a].f+mc[b].f+mc[c].f;
+        row[qc] = mT; row[qc+1] = fT; row[qc+2] = mT+fT;
+      });
+      const mT = mc.reduce((s,v) => s+v.m, 0), fT = mc.reduce((s,v) => s+v.f, 0);
+      row[ANN_COL] = mT; row[ANN_COL+1] = fT; row[ANN_COL+2] = mT+fT;
+      return row;
+    }
+
+    function sectionRow(label) { const r = Array(COL).fill(''); r[0] = label; return r; }
+
+    const S = (v, s) => ({v, s}); // styled cell
+    const rows = [];
+
+    // Row 1 — title
+    const r1 = Array(COL).fill('');
+    r1[0] = S('MHP Report:\nHealth Center Quarterly Summary', 1);
+    r1[1] = S('Republic of the Philippines\nDEPARTMENT OF HEALTH\nMetro Manila Center for Health Development\n\nLOCAL GOVERNMENT UNIT OF PASIG CITY', 2);
+    rows.push(r1);
+
+    // Row 2 — period headers
+    const r2 = Array(COL).fill('');
+    r2[0] = S(year, 17);
+    MONTH_NAMES.forEach((name, m) => { r2[MONTH_COLS[m]] = S(name, 10); });
+    r2[10] = S('Q1', 10); r2[22] = S('Q2', 10); r2[34] = S('Q3', 10); r2[46] = S('Q4', 10);
+    r2[49] = S('ANNUAL TOTAL', 10);
+    rows.push(r2);
+
+    // Row 3 — M/F/T sub-headers
+    const r3 = Array(COL).fill('');
+    r3[0] = S('INDICATORS', 15);
+    ALL_MFT_STARTS.forEach(c => { r3[c]=S('M',11); r3[c+1]=S('F',12); r3[c+2]=S('T',13); });
+    rows.push(r3);
+
+    // Override indicatorRow and sectionRow to produce styled cells
+    function indicatorRowStyled(label, key) {
+      const row = Array(COL).fill('');
+      row[0] = S(label, 14);
+      const mc = counts[key];
+      for (let m = 0; m < 12; m++) {
+        const c = MONTH_COLS[m];
+        row[c] = S(mc[m].m, 16); row[c+1] = S(mc[m].f, 16); row[c+2] = S(mc[m].m + mc[m].f, 16);
+      }
+      [[0,1,2],[3,4,5],[6,7,8],[9,10,11]].forEach(([a,b,c], qi) => {
+        const qc = QTR_COLS[qi];
+        const mT = mc[a].m+mc[b].m+mc[c].m, fT = mc[a].f+mc[b].f+mc[c].f;
+        row[qc] = S(mT, 16); row[qc+1] = S(fT, 16); row[qc+2] = S(mT+fT, 16);
+      });
+      const mT = mc.reduce((s,v) => s+v.m, 0), fT = mc.reduce((s,v) => s+v.f, 0);
+      row[ANN_COL] = S(mT, 16); row[ANN_COL+1] = S(fT, 16); row[ANN_COL+2] = S(mT+fT, 16);
+      return row;
+    }
+    function sectionRowStyled(label) { const r = Array(COL).fill(''); r[0] = S(label, 15); return r; }
+
+    // Indicator rows
+    rows.push(indicatorRowStyled('Total no. of individuals screened using MH Tools (PHQ-9, GAD-7, HEADSSS, etc.)', 'screened'));
+    rows.push(indicatorRowStyled('a. with red flags', 'redFlags'));
+    rows.push(sectionRowStyled('Total no. of Individuals with mental health concern assessed using the Mental Health Gap Action Programme (mhGAP) (FHSIS Indicator)'));
+    rows.push(indicatorRowStyled('Total no. of Individuals with mental health concern assessed using mhGAP (FHSIS Indicator)', 'mhgap'));
+    rows.push(sectionRowStyled('By Age Group'));
+    rows.push(indicatorRowStyled('0 to 9 years old', 'age0_9'));
+    rows.push(indicatorRowStyled('10 to 19 years old', 'age10_19'));
+    rows.push(indicatorRowStyled('20 to 59 years old', 'age20_59'));
+    rows.push(indicatorRowStyled('60 years old and above', 'age60plus'));
+    rows.push(sectionRowStyled('By Mental Health Condition (mhGAP)'));
+    rows.push(indicatorRowStyled('Depression', 'depression'));
+    rows.push(indicatorRowStyled('Anxiety', 'anxiety'));
+    rows.push(indicatorRowStyled('Psychosis', 'psychosis'));
+    rows.push(indicatorRowStyled('Epilepsy', 'epilepsy'));
+    rows.push(indicatorRowStyled('Child & Adolescent Mental & Behavioral Disorder', 'childAdolescent'));
+    rows.push(indicatorRowStyled('Dementia', 'dementia'));
+    rows.push(indicatorRowStyled('Self-harm/Suicide attempt', 'selfHarm'));
+    rows.push(indicatorRowStyled('Disorders due to Substance Use', 'substanceUse'));
+    rows.push(indicatorRowStyled('Other Significant Mental Health Concerns', 'otherMH'));
+
+    const merges = [
+      'B1:AZ1',
+      'B2:D2','E2:G2','H2:J2','K2:M2',
+      'N2:P2','Q2:S2','T2:V2','W2:Y2',
+      'Z2:AB2','AC2:AE2','AF2:AH2','AI2:AK2',
+      'AL2:AN2','AO2:AQ2','AR2:AT2','AU2:AW2',
+      'AX2:AZ2',
+    ];
+
+    // A=48.57, B-AZ all 7.0
+    const colWidths = [48.57, ...Array(51).fill(7)];
+    const rowHeights = { 1: 98.25, 2: 30, 3: 21 };
+
+    return buildXLSX('MH Screening Quarterly', rows, merges, { colWidths, rowHeights });
+  }
+
+  function generateReport() {
+    const type        = document.getElementById('rpt_type').value;
+    const year        = document.getElementById('rpt_year').value;
+    const selectAll   = document.getElementById('rpt_selectall').checked;
+    const facilitySel = document.getElementById('rpt_facility');
+    const facilities  = (isLGUUser() && selectAll) ? [...ALL_FACILITIES] : [facilitySel.value];
+
+    let xlsx, reportLabel;
+    try {
+      if (type === 'tcl_screening') {
+        xlsx        = generateTCLScreeningXLSX(year, facilities);
+        reportLabel = 'TCL - MH Screening & Assessment';
+      } else if (type === 'tcl_intervention') {
+        xlsx        = generateTCLInterventionXLSX(year, facilities);
+        reportLabel = 'TCL - MH Intervention Monitoring';
+      } else if (type === 'mmchd_quarterly') {
+        xlsx        = generateMMCHDQuarterlyXLSX(year, facilities);
+        reportLabel = 'MMCHD - Quarterly MH Screening & Assessment';
+      } else {
+        showToast('Report type not yet implemented.', 'info');
+        return;
+      }
+    } catch (err) {
+      console.error('Report generation error:', err);
+      showToast('Error generating report: ' + err.message, 'error');
+      return;
+    }
+
+    const now = new Date();
+    const ts  = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}-${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    const filename = `${reportLabel} for Year ${year} - as of ${ts}.xlsx`;
+
+    const blob = new Blob([xlsx], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    closeReportModal();
+    showToast(`Report downloaded: ${filename}`, 'success');
+  }
+
   /* =================== GLOBAL LISTENERS =================== */
   document.getElementById('btnSearch').addEventListener('click', applyFilters);
   document.getElementById('btnReset').addEventListener('click', resetFilters);
+  document.getElementById('advSearchToggle').addEventListener('click', () => {
+    const open = document.getElementById('advSearchPanel').classList.toggle('open');
+    document.getElementById('advSearchToggle').classList.toggle('open', open);
+  });
+  // Update "active" badge whenever any advanced field changes
+  ['fAgeGroup','fSex','fStatus','fAssessYear','fFacility','fBarangay','fMhgap'].forEach(id =>
+    document.getElementById(id).addEventListener('change', updateAdvBadge));
+  ['fIntPsycho','fIntPharma','fPwd','fLguEmp','f4Ps'].forEach(id =>
+    document.getElementById(id).addEventListener('change', updateAdvBadge));
+  // Initialize panel visibility and patient scope for the default user on page load
+  updateAdvPanelForUser();
+  filteredPatients = [...visiblePatients()];
   document.getElementById('btnNewPatient').addEventListener('click', openNewPatient);
+  document.getElementById('btnNewReport').addEventListener('click', openReportModal);
+  document.getElementById('reportModalCloseBtn').addEventListener('click', closeReportModal);
+  document.getElementById('reportCancelBtn').addEventListener('click', closeReportModal);
+  document.getElementById('reportGenerateBtn').addEventListener('click', generateReport);
+  document.getElementById('reportModal').addEventListener('click', e => {
+    if (e.target.id === 'reportModal') closeReportModal();
+  });
+  document.getElementById('rpt_selectall').addEventListener('change', function() {
+    const facilitySel = document.getElementById('rpt_facility');
+    facilitySel.disabled = this.checked;
+  });
+
   document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
   document.getElementById('assessCloseBtn').addEventListener('click', () => { isFollowUp = false; closeAssessModal(); });
   document.getElementById('visitDetailCloseBtn').addEventListener('click', closeVisitDetail);
@@ -4435,6 +6070,7 @@
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       closeModal();
+      closeReportModal();
       if (document.getElementById('assessModal').classList.contains('active')) { isFollowUp = false; closeAssessModal(); }
       closeVisitDetail();
     }
